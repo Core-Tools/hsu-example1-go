@@ -1,1 +1,1 @@
-# hsu-example1-go
+# hsu-echo-simple-go

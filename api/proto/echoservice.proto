@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "github.com/core-tools/hsu-echo/generated/api/proto";
+
+package proto;
+
+service EchoService {
+  rpc Echo(EchoRequest) returns (EchoResponse) {}
+}
+
+message EchoRequest {
+  string message = 1;
+}
+
+message EchoResponse {
+  string message = 1;
+}
