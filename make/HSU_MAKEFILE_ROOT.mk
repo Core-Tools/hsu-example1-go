@@ -113,16 +113,16 @@ ifndef ENABLE_PYTHON
     endif
 endif
 
-# Language-specific includes
+# Language-specific includes  
 ifeq ($(ENABLE_GO),yes)
     ifneq ($(GO_DIR),)
-        include make/HSU_MAKEFILE_GO.mk
+        include $(INCLUDE_PREFIX)HSU_MAKEFILE_GO.mk
     endif
 endif
 
 ifeq ($(ENABLE_PYTHON),yes)
     ifneq ($(PYTHON_DIR),)
-        include make/HSU_MAKEFILE_PYTHON.mk
+        include $(INCLUDE_PREFIX)HSU_MAKEFILE_PYTHON.mk
     endif
 endif
 

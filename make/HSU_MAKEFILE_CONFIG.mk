@@ -6,6 +6,9 @@ PROJECT_NAME := hsu-example-template
 PROJECT_DOMAIN := example
 PROJECT_VERSION := 1.0.0
 
+# Include Path Configuration
+INCLUDE_PREFIX :=  # Default: empty (root-level includes) | Common: make/ build/ scripts/
+
 # Repository Structure (auto-detected if not set)
 # REPO_TYPE := single-language | multi-language | multi-repo
 # GO_DIR := . | go | path/to/go/module
