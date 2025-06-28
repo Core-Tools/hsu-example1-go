@@ -18,9 +18,14 @@ CLI_BUILD_DIR ?= cmd/cli
 SRV_BUILD_DIR ?= cmd/srv  
 LIB_BUILD_DIR ?= pkg
 
-# Auto-detect Go executables
-GO_CLI_TARGETS := $(shell find $(GO_DIR)/$(CLI_BUILD_DIR) -name "main.go" -exec dirname {} \; 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
-GO_SRV_TARGETS := $(shell find $(GO_DIR)/$(SRV_BUILD_DIR) -name "main.go" -exec dirname {} \; 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
+# Auto-detect Go executables (cross-platform compatible)
+ifeq ($(SHELL_TYPE),MSYS)
+    GO_CLI_TARGETS := $(shell bash -c "find $(GO_DIR)/$(CLI_BUILD_DIR) -name 'main.go' -exec dirname {} \;" 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
+    GO_SRV_TARGETS := $(shell bash -c "find $(GO_DIR)/$(SRV_BUILD_DIR) -name 'main.go' -exec dirname {} \;" 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
+else
+    GO_CLI_TARGETS := $(shell find $(GO_DIR)/$(CLI_BUILD_DIR) -name "main.go" -exec dirname {} \; 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
+    GO_SRV_TARGETS := $(shell find $(GO_DIR)/$(SRV_BUILD_DIR) -name "main.go" -exec dirname {} \; 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
+endif
 
 # Go command wrapper - runs from correct directory
 ifeq ($(GO_DIR),.)
@@ -192,7 +197,11 @@ go-lint-diag:
 	@echo ""
 	@echo "4. Import analysis:"
 	@echo "   Checking domain imports in source files..."
+ifeq ($(SHELL_TYPE),MSYS)
+	@bash -c "find $(GO_DIR) -name '*.go' -exec grep -l '$(DOMAIN_IMPORT_PREFIX)' {} \;" | head -5 | sed 's/^/   /' || echo "   No domain imports found"
+else
 	@find $(GO_DIR) -name "*.go" -exec grep -l "$(DOMAIN_IMPORT_PREFIX)" {} \; | head -5 | sed 's/^/   /' || echo "   No domain imports found"
+endif
 	@echo ""
 	@echo "5. Suggested fixes:"
 	@echo "   - Ensure go.mod has: replace $(DOMAIN_IMPORT_PREFIX) => $(DOMAIN_REPLACE_TARGET)"
