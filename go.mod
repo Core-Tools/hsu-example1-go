@@ -2,10 +2,12 @@ module github.com/core-tools/hsu-example1-go
 
 go 1.22.3
 
+replace github.com/core-tools/hsu-core => github.com/core-tools/hsu-core/go v0.0.0-20250629184611-fee5dfd7a69e
+
 replace github.com/core-tools/hsu-echo => .
 
 require (
-	github.com/core-tools/hsu-core v0.0.0-20250619224703-c67bc8d77724
+	github.com/core-tools/hsu-core v0.0.0-00010101000000-000000000000
 	github.com/core-tools/hsu-echo v0.0.0-00010101000000-000000000000
 	github.com/jessevdk/go-flags v1.6.1
 	google.golang.org/grpc v1.65.0

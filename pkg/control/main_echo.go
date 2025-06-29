@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"os"
 
-	coreControl "github.com/core-tools/hsu-core/go/control" // TODO: golib
-	coreDomain "github.com/core-tools/hsu-core/go/domain"   // TODO: golib
-	coreLogging "github.com/core-tools/hsu-core/go/logging" // TODO: golib
+	sprintfLogging "github.com/core-tools/hsu-core/pkg/logging/sprintf"
+
+	coreControl "github.com/core-tools/hsu-core/pkg/control"
+	coreDomain "github.com/core-tools/hsu-core/pkg/domain"
+	coreLogging "github.com/core-tools/hsu-core/pkg/logging"
 
 	echoDomain "github.com/core-tools/hsu-echo/pkg/domain"
 	echoLogging "github.com/core-tools/hsu-echo/pkg/logging"
-	sprintfLogging "github.com/core-tools/hsu-echo/pkg/logging/sprintf" // TODO: move to hsu-core
 
 	flags "github.com/jessevdk/go-flags"
 )

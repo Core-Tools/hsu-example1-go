@@ -102,7 +102,6 @@ endif
 # Function to build a Go binary
 define build_go_binary
 	@echo "  Building $(1)..."
-	@$(MKDIR) $(call make_go_target,$(1)) 2>$(NULL_DEV) || true
 	@$(MKDIR) $(dir $(call make_go_target,$(1))) 2>$(NULL_DEV) || true
 	$(GO_CMD) go build $(GO_BUILD_FLAGS) -o $(call make_go_output,$(1)) ./$(1)/
 	@echo "  ✓ Built: $(call make_go_target,$(1))"

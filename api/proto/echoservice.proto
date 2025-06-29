@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/core-tools/hsu-echo/generated/api/proto";
+option go_package = "github.com/core-tools/hsu-echo/api/proto";
 
 package proto;
 

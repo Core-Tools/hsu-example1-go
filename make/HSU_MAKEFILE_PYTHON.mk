@@ -28,12 +28,16 @@ endif
 
 # Auto-detect Python build tool
 ifndef PYTHON_BUILD_DETECTED
-    ifneq ($(wildcard $(PYTHON_DIR)/pyproject.toml),)
-        # Check if it's Poetry or PDM
+    ifneq ($(wildcard $(PYTHON_DIR)/uv.lock),)
+        PYTHON_BUILD_DETECTED := uv
+    else ifneq ($(wildcard $(PYTHON_DIR)/pyproject.toml),)
+        # Check if it's Poetry, PDM, or UV
         ifneq ($(shell grep -l "\[tool.poetry\]" $(PYTHON_DIR)/pyproject.toml 2>$(NULL_DEV)),)
             PYTHON_BUILD_DETECTED := poetry
         else ifneq ($(shell grep -l "\[tool.pdm\]" $(PYTHON_DIR)/pyproject.toml 2>$(NULL_DEV)),)
             PYTHON_BUILD_DETECTED := pdm
+        else ifneq ($(shell grep -l "\[tool.uv\]" $(PYTHON_DIR)/pyproject.toml 2>$(NULL_DEV)),)
+            PYTHON_BUILD_DETECTED := uv
         else
             PYTHON_BUILD_DETECTED := setuptools
         endif
@@ -57,7 +61,9 @@ py-setup: py-venv py-deps
 ## Python Virtual Environment - Create/activate virtual environment
 py-venv:
 	@echo "Setting up Python virtual environment..."
-ifeq ($(PYTHON_BUILD_TOOL),poetry)
+ifeq ($(PYTHON_BUILD_TOOL),uv)
+	$(PY_CMD) uv venv || echo "Virtual environment already exists or created by uv"
+else ifeq ($(PYTHON_BUILD_TOOL),poetry)
 	$(PY_CMD) poetry install --no-root
 else ifeq ($(PYTHON_BUILD_TOOL),pdm)
 	$(PY_CMD) pdm install
@@ -71,7 +77,9 @@ endif
 ## Python Dependencies - Install Python dependencies
 py-deps:
 	@echo "Installing Python dependencies..."
-ifeq ($(PYTHON_BUILD_TOOL),poetry)
+ifeq ($(PYTHON_BUILD_TOOL),uv)
+	$(PY_CMD) uv sync
+else ifeq ($(PYTHON_BUILD_TOOL),poetry)
 	$(PY_CMD) poetry install
 else ifeq ($(PYTHON_BUILD_TOOL),pdm)
 	$(PY_CMD) pdm install
@@ -84,7 +92,9 @@ endif
 ## Python Build - Build Python packages
 py-build:
 	@echo "Building Python packages..."
-ifeq ($(PYTHON_BUILD_TOOL),poetry)
+ifeq ($(PYTHON_BUILD_TOOL),uv)
+	$(PY_CMD) uv build
+else ifeq ($(PYTHON_BUILD_TOOL),poetry)
 	$(PY_CMD) poetry build
 else ifeq ($(PYTHON_BUILD_TOOL),pdm)
 	$(PY_CMD) pdm build
@@ -99,7 +109,9 @@ endif
 ## Python Test - Run Python tests
 py-test:
 	@echo "Running Python tests..."
-ifeq ($(PYTHON_BUILD_TOOL),poetry)
+ifeq ($(PYTHON_BUILD_TOOL),uv)
+	$(PY_CMD) uv run pytest
+else ifeq ($(PYTHON_BUILD_TOOL),poetry)
 	$(PY_CMD) poetry run python -m pytest
 else ifeq ($(PYTHON_BUILD_TOOL),pdm)
 	$(PY_CMD) pdm run python -m pytest
@@ -112,7 +124,10 @@ endif
 ## Python Lint - Run Python linting
 py-lint:
 	@echo "Running Python linting..."
-ifeq ($(PYTHON_BUILD_TOOL),poetry)
+ifeq ($(PYTHON_BUILD_TOOL),uv)
+	$(PY_CMD) uv run ruff check . || echo "ruff not available"
+	$(PY_CMD) uv run mypy . || echo "mypy not available"
+else ifeq ($(PYTHON_BUILD_TOOL),poetry)
 	$(PY_CMD) poetry run python -m flake8 . || echo "flake8 not available"
 	$(PY_CMD) poetry run python -m mypy . || echo "mypy not available"
 else ifeq ($(PYTHON_BUILD_TOOL),pdm)
@@ -136,7 +151,11 @@ endif
 ## Python Format - Format Python code
 py-format:
 	@echo "Formatting Python code..."
-ifeq ($(PYTHON_BUILD_TOOL),poetry)
+ifeq ($(PYTHON_BUILD_TOOL),uv)
+	$(PY_CMD) uv run black . || echo "black not available"
+	$(PY_CMD) uv run isort . || echo "isort not available"
+	$(PY_CMD) uv run ruff format . || echo "ruff format not available"
+else ifeq ($(PYTHON_BUILD_TOOL),poetry)
 	$(PY_CMD) poetry run python -m black . || echo "black not available"
 	$(PY_CMD) poetry run python -m isort . || echo "isort not available"
 else ifeq ($(PYTHON_BUILD_TOOL),pdm)
@@ -195,7 +214,11 @@ py-info:
 	@echo "Python Build Tool: $(PYTHON_BUILD_TOOL) (detected: $(PYTHON_BUILD_DETECTED))"
 	@echo "Python Version: $$($(PY_CMD) python --version 2>$(NULL_DEV) || echo 'Not available')"
 	@echo "Python Executable: $$($(PY_CMD) which python 2>$(NULL_DEV) || echo 'Not found')"
+ifeq ($(PYTHON_BUILD_TOOL),uv)
+	@echo "UV Version: $$($(PY_CMD) uv --version 2>$(NULL_DEV) || echo 'Not available')"
+else
 	@echo "Pip Version: $$($(PY_CMD) pip --version 2>$(NULL_DEV) || echo 'Not available')"
+endif
 	@echo ""
 	@echo "Build Configuration:"
 	@echo "Python Package: $(PYTHON_PACKAGE_NAME)"
