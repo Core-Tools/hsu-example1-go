@@ -6,17 +6,24 @@
 # Build artifacts
 build/
 deps/
+dist/
 *.build/
 *.dist/
+eggs/
+.eggs/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Node artifact files
-dist/
+# Python byte-compiled / optimized
+__pycache__/
+*.py[codz]
+*$py.class
 
 # Compiled Java class files
 *.class
-
-# Compiled Python bytecode
-*.py[cod]
 
 # Log files
 *.log
