@@ -367,8 +367,14 @@ py-nuitka: py-nuitka-deps $(NUITKA_GENERATED_WRAPPER)
 	
 	# Run Nuitka build
 	@echo "Running Nuitka compilation..."
+ifeq ($(PYTHON_DIR),.)
 	$(PY_CMD) python -m nuitka $(NUITKA_OPTS) $(NUITKA_SOURCE_FILE) > $(NUITKA_LOG_FILE) 2>&1 || \
 		(echo "❌ Nuitka build failed! Check $(NUITKA_LOG_FILE) for details." && exit 1)
+else
+	# For multi-language repos: run from project root to access make.patch_meta
+	python -m nuitka $(NUITKA_OPTS) $(NUITKA_GENERATED_WRAPPER) > $(NUITKA_LOG_FILE) 2>&1 || \
+		(echo "❌ Nuitka build failed! Check $(NUITKA_LOG_FILE) for details." && exit 1)
+endif
 	
 	@echo "Build completed. Check $(NUITKA_LOG_FILE) for details."
 	
