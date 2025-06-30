@@ -130,7 +130,7 @@ endif
 .DEFAULT_GOAL := help
 
 # Global targets
-.PHONY: help info clean build test setup lint format check all
+.PHONY: help info clean build test setup lint format check all proto protoc proto-gen
 
 ## Help - Show available targets
 help:
@@ -146,14 +146,16 @@ help:
 	@echo "  lint         - Run linting for all enabled languages"
 	@echo "  format       - Format code for all enabled languages"
 	@echo "  check        - Run all checks for all enabled languages"
+	@echo "  proto        - Generate protobuf code for all enabled languages"
 	@echo ""
 ifeq ($(ENABLE_GO),yes)
 	@echo "Go Commands:"
 	@echo "  go-build     - Build Go components"
 	@echo "  go-test      - Run Go tests"
 	@echo "  go-lint      - Lint Go code"
-	@echo "  go-format    - Format Go code"
+	@echo "  go-format    - Format Go code" 
 	@echo "  go-clean     - Clean Go artifacts"
+	@echo "  go-protoc    - Generate Go protobuf code"
 	@echo ""
 endif
 ifeq ($(ENABLE_PYTHON),yes)
@@ -163,6 +165,13 @@ ifeq ($(ENABLE_PYTHON),yes)
 	@echo "  py-lint      - Lint Python code"
 	@echo "  py-format    - Format Python code"
 	@echo "  py-clean     - Clean Python artifacts"
+	@echo "  py-protoc    - Generate Python protobuf code"
+ifeq ($(ENABLE_NUITKA),yes)
+	@echo "  py-nuitka    - Build Python binary with Nuitka"
+	@echo "  nuitka       - Alias for py-nuitka"
+	@echo "  nuitka-info  - Show Nuitka configuration"
+	@echo "  nuitka-clean - Clean Nuitka artifacts"
+endif
 	@echo ""
 endif
 	@echo "Examples:"
@@ -218,6 +227,17 @@ setup: $(if $(filter yes,$(ENABLE_GO)),go-setup) $(if $(filter yes,$(ENABLE_PYTH
 all: build
 tidy: $(if $(filter yes,$(ENABLE_GO)),go-tidy)
 deps: $(if $(filter yes,$(ENABLE_GO)),go-deps) $(if $(filter yes,$(ENABLE_PYTHON)),py-deps)
+
+## Protocol Buffer Generation - Generate protobuf code for all enabled languages
+proto protoc proto-gen: $(if $(filter yes,$(ENABLE_GO)),go-protoc) $(if $(filter yes,$(ENABLE_PYTHON)),py-protoc)
+
+# Nuitka universal targets
+ifeq ($(ENABLE_NUITKA),yes)
+.PHONY: nuitka nuitka-clean nuitka-info
+nuitka: py-nuitka
+nuitka-clean: py-nuitka-clean
+nuitka-info: py-nuitka-info
+endif
 
 # Running targets (Go-specific for now, extend for other languages)
 ifeq ($(ENABLE_GO),yes)

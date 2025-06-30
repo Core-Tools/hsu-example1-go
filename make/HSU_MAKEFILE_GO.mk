@@ -13,18 +13,18 @@ GO_TEST_TIMEOUT ?= 10m
 DOMAIN_IMPORT_PREFIX ?= github.com/core-tools/hsu-$(PROJECT_DOMAIN)
 DOMAIN_REPLACE_TARGET ?= .
 
-# Build directory configuration (relative to GO_DIR)
-CLI_BUILD_DIR ?= cmd/cli
-SRV_BUILD_DIR ?= cmd/srv  
-LIB_BUILD_DIR ?= pkg
+# Build directory configuration (relative to GO_DIR) - Language-specific
+GO_CLI_BUILD_DIR := $(or $(GO_CLI_BUILD_DIR),cmd/cli)
+GO_SRV_BUILD_DIR := $(or $(GO_SRV_BUILD_DIR),cmd/srv)
+GO_LIB_BUILD_DIR := $(or $(GO_LIB_BUILD_DIR),pkg)
 
 # Auto-detect Go executables (cross-platform compatible)
 ifeq ($(SHELL_TYPE),MSYS)
-    GO_CLI_TARGETS := $(shell bash -c "find $(GO_DIR)/$(CLI_BUILD_DIR) -name 'main.go' -exec dirname {} \;" 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
-    GO_SRV_TARGETS := $(shell bash -c "find $(GO_DIR)/$(SRV_BUILD_DIR) -name 'main.go' -exec dirname {} \;" 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
+    GO_CLI_TARGETS := $(shell bash -c "find $(GO_DIR)/$(GO_CLI_BUILD_DIR) -name 'main.go' -exec dirname {} \;" 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
+    GO_SRV_TARGETS := $(shell bash -c "find $(GO_DIR)/$(GO_SRV_BUILD_DIR) -name 'main.go' -exec dirname {} \;" 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
 else
-    GO_CLI_TARGETS := $(shell find $(GO_DIR)/$(CLI_BUILD_DIR) -name "main.go" -exec dirname {} \; 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
-    GO_SRV_TARGETS := $(shell find $(GO_DIR)/$(SRV_BUILD_DIR) -name "main.go" -exec dirname {} \; 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
+    GO_CLI_TARGETS := $(shell find $(GO_DIR)/$(GO_CLI_BUILD_DIR) -name "main.go" -exec dirname {} \; 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
+    GO_SRV_TARGETS := $(shell find $(GO_DIR)/$(GO_SRV_BUILD_DIR) -name "main.go" -exec dirname {} \; 2>$(NULL_DEV) | sed 's|$(GO_DIR)/||')
 endif
 
 # Go command wrapper - runs from correct directory
@@ -61,7 +61,7 @@ GO_SRV_BINARIES := $(foreach target,$(GO_SRV_TARGETS),$(call make_go_target,$(ta
 ALL_GO_BINARIES := $(GO_CLI_BINARIES) $(GO_SRV_BINARIES)
 
 # Go-specific targets
-.PHONY: go-setup go-deps go-tidy go-build go-build-cli go-build-srv go-test go-lint go-format go-clean go-check go-info go-mod-verify
+.PHONY: go-setup go-deps go-tidy go-build go-build-cli go-build-srv go-test go-lint go-format go-clean go-check go-info go-mod-verify go-protoc go-proto-gen
 
 ## Go Setup - Initialize Go development environment
 go-setup: go-deps go-tidy
@@ -87,7 +87,7 @@ go-build-cli:
 ifneq ($(GO_CLI_TARGETS),)
 	@$(foreach target,$(GO_CLI_TARGETS),$(call build_go_binary,$(target)))
 else
-	@echo "No CLI targets found in $(GO_DIR)/$(CLI_BUILD_DIR)"
+	@echo "No CLI targets found in $(GO_DIR)/$(GO_CLI_BUILD_DIR)"
 endif
 
 ## Go Build Server - Build all server executables  
@@ -96,7 +96,7 @@ go-build-srv:
 ifneq ($(GO_SRV_TARGETS),)
 	@$(foreach target,$(GO_SRV_TARGETS),$(call build_go_binary,$(target)))
 else
-	@echo "No server targets found in $(GO_DIR)/$(SRV_BUILD_DIR)"
+	@echo "No server targets found in $(GO_DIR)/$(GO_SRV_BUILD_DIR)"
 endif
 
 # Function to build a Go binary
@@ -138,6 +138,12 @@ go-clean:
 	@echo "Cleaning Go artifacts..."
 	$(GO_CMD) go clean ./...
 	@$(foreach binary,$(ALL_GO_BINARIES),$(RM) $(binary) 2>$(NULL_DEV) || true;)
+	# Clean generated protobuf files
+ifeq ($(GO_DIR),.)
+	-$(RM_RF) "$(GO_LIB_BUILD_DIR)/generated" 2>$(NULL_DEV) || true
+else
+	-$(RM_RF) "$(GO_DIR)/$(GO_LIB_BUILD_DIR)/generated" 2>$(NULL_DEV) || true
+endif
 	@echo "✓ Go clean complete"
 
 ## Go Check - Run all Go checks (lint + test)
@@ -206,6 +212,60 @@ endif
 	@echo "   - Ensure go.mod has: replace $(DOMAIN_IMPORT_PREFIX) => $(DOMAIN_REPLACE_TARGET)"
 	@echo "   - Try: make go-lint-fix"
 	@echo "   - For VSCode: restart Go language server"
+
+# =============================================================================
+# Protocol Buffer Generation Support
+# =============================================================================
+
+# Protocol Buffer Configuration
+PROTO_API_DIR ?= api/proto
+
+# Handle single-language vs multi-language directory structure
+ifeq ($(GO_DIR),.)
+    # Single-language repo: output directly to pkg/generated/api/proto
+    GO_PROTO_OUTPUT_DIR := $(GO_LIB_BUILD_DIR)/generated/api/proto
+else
+    # Multi-language repo: output to go/pkg/generated/api/proto
+    GO_PROTO_OUTPUT_DIR := $(GO_DIR)/$(GO_LIB_BUILD_DIR)/generated/api/proto
+endif
+
+## Go Protocol Buffer Generation - Generate Go code from .proto files
+go-protoc go-proto-gen:
+	@echo "Generating Go protobuf code..."
+	@if [ ! -d "$(PROTO_API_DIR)" ]; then \
+		echo "❌ Proto directory not found: $(PROTO_API_DIR)"; \
+		exit 1; \
+	fi
+	@if [ ! -f "$(PROTO_API_DIR)"/*.proto ]; then \
+		echo "❌ No .proto files found in $(PROTO_API_DIR)"; \
+		exit 1; \
+	fi
+	@if ! which protoc >/dev/null 2>&1; then \
+		echo "❌ protoc not found. Install Protocol Buffers compiler"; \
+		echo "   See: https://grpc.io/docs/protoc-installation/"; \
+		exit 1; \
+	fi
+	@$(MKDIR) "$(GO_PROTO_OUTPUT_DIR)" 2>$(NULL_DEV) || true
+	@echo "📁 Output directory: $(GO_PROTO_OUTPUT_DIR)"
+	
+	# Copy infrastructure files from make/ to generated folder
+	@if [ -f "$(INCLUDE_PREFIX)version.go.template" ]; then \
+		echo "📋 Copying version.go infrastructure file..."; \
+		$(COPY) "$(INCLUDE_PREFIX)version.go.template" "$(GO_PROTO_OUTPUT_DIR)/version.go"; \
+	fi
+	
+	@for proto_file in $(PROTO_API_DIR)/*.proto; do \
+		echo "🔄 Processing: $$proto_file"; \
+		protoc \
+			--go_out="$(GO_PROTO_OUTPUT_DIR)" \
+			--go_opt=paths=source_relative \
+			--go-grpc_out="$(GO_PROTO_OUTPUT_DIR)" \
+			--go-grpc_opt=paths=source_relative \
+			-I="$(PROTO_API_DIR)" \
+			"$$proto_file"; \
+	done
+	@echo "✅ Go protobuf generation complete"
+	@echo "📂 Generated files in: $(GO_PROTO_OUTPUT_DIR)" 
 
 ## Go Lint Fix - Attempt common fixes for linter issues
 go-lint-fix:
