@@ -12,6 +12,11 @@ PROJECT_VERSION := 1.0.0
 # Examples: INCLUDE_PREFIX := make/  or  INCLUDE_PREFIX := tools/  or  INCLUDE_PREFIX := 
 INCLUDE_PREFIX :=  # Default: empty (root-level includes) | Common: make/ build/ scripts/
 
+# Generated Code Directory Configuration
+# Must be either empty or single path segment ending with /
+# Examples: GENERATED_PREFIX := generated/  or  GENERATED_PREFIX := gen/  or  GENERATED_PREFIX := 
+GENERATED_PREFIX := generated/  # Default: generated/ | Common: gen/ codegen/ build/generated/
+
 # Repository Structure (auto-detected if not set)
 # REPO_TYPE := single-language | multi-language | multi-repo
 # GO_DIR := . | go | path/to/go/module

@@ -187,9 +187,9 @@ py-clean:
 	-$(RM_RF) $(PYTHON_DIR)/dist 2>$(NULL_DEV) || true
 	# Clean generated protobuf files and __init__.py files
 ifeq ($(PYTHON_DIR),.)
-	-$(RM_RF) "$(PY_LIB_BUILD_DIR)/generated" 2>$(NULL_DEV) || true
+	-$(RM_RF) "$(PY_LIB_BUILD_DIR)/$(GENERATED_PREFIX)" 2>$(NULL_DEV) || true
 else
-	-$(RM_RF) "$(PYTHON_DIR)/$(PY_LIB_BUILD_DIR)/generated" 2>$(NULL_DEV) || true
+	-$(RM_RF) "$(PYTHON_DIR)/$(PY_LIB_BUILD_DIR)/$(GENERATED_PREFIX)" 2>$(NULL_DEV) || true
 endif
 ifeq ($(ENABLE_NUITKA),yes)
 	@$(RM_RF) "$(NUITKA_GENERATED_WRAPPER)" 2>$(NULL_DEV) || true
@@ -445,13 +445,16 @@ endif  # ENABLE_NUITKA
 # Protocol Buffer Configuration
 PROTO_API_DIR ?= api/proto
 
+# Generated code directory configuration (default to generated/ if not set)
+GENERATED_PREFIX ?= generated/
+
 # Handle single-language vs multi-language directory structure
 ifeq ($(PYTHON_DIR),.)
-    # Single-language repo: output directly to lib/generated/api/proto
-    PY_PROTO_OUTPUT_DIR := $(PY_LIB_BUILD_DIR)/generated/api/proto
+    # Single-language repo: output directly to lib/{GENERATED_PREFIX}api/proto
+    PY_PROTO_OUTPUT_DIR := $(PY_LIB_BUILD_DIR)/$(GENERATED_PREFIX)api/proto
 else
-    # Multi-language repo: output to python/lib/generated/api/proto
-    PY_PROTO_OUTPUT_DIR := $(PYTHON_DIR)/$(PY_LIB_BUILD_DIR)/generated/api/proto
+    # Multi-language repo: output to python/lib/{GENERATED_PREFIX}api/proto
+    PY_PROTO_OUTPUT_DIR := $(PYTHON_DIR)/$(PY_LIB_BUILD_DIR)/$(GENERATED_PREFIX)api/proto
 endif
 
 PY_FIX_IMPORTS_SCRIPT := $(PY_PROTO_OUTPUT_DIR)/fix_imports.py
@@ -478,13 +481,13 @@ py-protoc py-proto-gen:
 	@echo "📦 Creating Python package structure..."
 ifeq ($(PYTHON_DIR),.)
 	@echo "# Generated Python package" > "$(PY_LIB_BUILD_DIR)/__init__.py"
-	@echo "# Generated Python package" > "$(PY_LIB_BUILD_DIR)/generated/__init__.py"
-	@echo "# Generated Python package" > "$(PY_LIB_BUILD_DIR)/generated/api/__init__.py"
+	@echo "# Generated Python package" > "$(PY_LIB_BUILD_DIR)/$(GENERATED_PREFIX)__init__.py"
+	@echo "# Generated Python package" > "$(PY_LIB_BUILD_DIR)/$(GENERATED_PREFIX)api/__init__.py"
 	@echo "# Generated Python package" > "$(PY_PROTO_OUTPUT_DIR)/__init__.py"
 else
 	@echo "# Generated Python package" > "$(PYTHON_DIR)/$(PY_LIB_BUILD_DIR)/__init__.py"
-	@echo "# Generated Python package" > "$(PYTHON_DIR)/$(PY_LIB_BUILD_DIR)/generated/__init__.py"
-	@echo "# Generated Python package" > "$(PYTHON_DIR)/$(PY_LIB_BUILD_DIR)/generated/api/__init__.py"
+	@echo "# Generated Python package" > "$(PYTHON_DIR)/$(PY_LIB_BUILD_DIR)/$(GENERATED_PREFIX)__init__.py"
+	@echo "# Generated Python package" > "$(PYTHON_DIR)/$(PY_LIB_BUILD_DIR)/$(GENERATED_PREFIX)api/__init__.py"
 	@echo "# Generated Python package" > "$(PY_PROTO_OUTPUT_DIR)/__init__.py"
 endif
 	

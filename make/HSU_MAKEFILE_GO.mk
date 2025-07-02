@@ -140,9 +140,9 @@ go-clean:
 	@$(foreach binary,$(ALL_GO_BINARIES),$(RM) $(binary) 2>$(NULL_DEV) || true;)
 	# Clean generated protobuf files
 ifeq ($(GO_DIR),.)
-	-$(RM_RF) "$(GO_LIB_BUILD_DIR)/generated" 2>$(NULL_DEV) || true
+	-$(RM_RF) "$(GO_LIB_BUILD_DIR)/$(GENERATED_PREFIX)" 2>$(NULL_DEV) || true
 else
-	-$(RM_RF) "$(GO_DIR)/$(GO_LIB_BUILD_DIR)/generated" 2>$(NULL_DEV) || true
+	-$(RM_RF) "$(GO_DIR)/$(GO_LIB_BUILD_DIR)/$(GENERATED_PREFIX)" 2>$(NULL_DEV) || true
 endif
 	@echo "✓ Go clean complete"
 
@@ -220,13 +220,16 @@ endif
 # Protocol Buffer Configuration
 PROTO_API_DIR ?= api/proto
 
+# Generated code directory configuration (default to generated/ if not set)
+GENERATED_PREFIX ?= generated/
+
 # Handle single-language vs multi-language directory structure
 ifeq ($(GO_DIR),.)
-    # Single-language repo: output directly to pkg/generated/api/proto
-    GO_PROTO_OUTPUT_DIR := $(GO_LIB_BUILD_DIR)/generated/api/proto
+    # Single-language repo: output directly to pkg/{GENERATED_PREFIX}api/proto
+    GO_PROTO_OUTPUT_DIR := $(GO_LIB_BUILD_DIR)/$(GENERATED_PREFIX)api/proto
 else
-    # Multi-language repo: output to go/pkg/generated/api/proto
-    GO_PROTO_OUTPUT_DIR := $(GO_DIR)/$(GO_LIB_BUILD_DIR)/generated/api/proto
+    # Multi-language repo: output to go/pkg/{GENERATED_PREFIX}api/proto
+    GO_PROTO_OUTPUT_DIR := $(GO_DIR)/$(GO_LIB_BUILD_DIR)/$(GENERATED_PREFIX)api/proto
 endif
 
 ## Go Protocol Buffer Generation - Generate Go code from .proto files
