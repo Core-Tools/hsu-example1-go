@@ -1,5 +1,6 @@
-# HSU Makefile Configuration
-# Template configuration file for HSU Repository Portability Framework
+# HSU Makefile Configuration Template
+# Default configuration template for HSU Repository Portability Framework
+# Copy to your project and rename to Makefile.config or HSU_MAKEFILE_CONFIG.mk
 
 # Project Information
 PROJECT_NAME := hsu-example-template
@@ -17,7 +18,7 @@ INCLUDE_PREFIX :=  # Default: empty (root-level includes) | Common: make/ build/
 # PYTHON_DIR := . | python | path/to/python/module
 
 # Language Support
-ENABLE_GO := yes
+ENABLE_GO := no
 ENABLE_PYTHON := no
 ENABLE_CPP := no
 ENABLE_RUST := no

@@ -1,11 +1,10 @@
 # HSU Universal Makefile - Root Coordinator
 # Supports all 3 approaches in HSU Repository Portability Framework
-# Version: 1.0.0
+# HSU Makefile System Version: 1.0.0
 
 # Include project configuration (with defaults)
--include HSU_MAKEFILE_CONFIG.mk
+-include HSU_MAKE_CONFIG_TMPL.mk
 -include Makefile.config
--include config.mk
 
 # Auto-detect OS and Shell Environment
 ifeq ($(OS),Windows_NT)

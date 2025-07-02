@@ -1,6 +1,6 @@
 # HSU Python-Specific Makefile
 # Handles Python operations for HSU Repository Portability Framework
-# Version: 1.0.0
+# HSU Makefile System Version: 1.0.0
 
 # Python Configuration (with defaults)
 PYTHON_PACKAGE_NAME ?= $(subst -,_,$(PROJECT_NAME))

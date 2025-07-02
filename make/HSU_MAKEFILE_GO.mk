@@ -1,6 +1,6 @@
 # HSU Go-Specific Makefile
 # Handles Go operations for HSU Repository Portability Framework
-# Version: 1.0.0
+# HSU Makefile System Version: 1.0.0
 
 # Go Configuration (with defaults)
 GO_MODULE_NAME ?= github.com/core-tools/$(PROJECT_NAME)
