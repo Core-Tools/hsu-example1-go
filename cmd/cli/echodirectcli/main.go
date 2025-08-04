@@ -12,15 +12,13 @@ import (
 	sprintflogging "github.com/core-tools/hsu-core/pkg/logging/sprintf"
 	"github.com/core-tools/hsu-core/pkg/modules"
 	"github.com/core-tools/hsu-core/pkg/runtime"
-	grpcapi "github.com/core-tools/hsu-echo/pkg/api/grpc"
+	"github.com/core-tools/hsu-echo/cmd/cli/echoclient"
 	"github.com/core-tools/hsu-echo/pkg/domain"
-	"google.golang.org/grpc"
 
 	flags "github.com/jessevdk/go-flags"
 )
 
 type flagOptions struct {
-	Port int `long:"port" description:"port to listen on"`
 }
 
 func main() {
@@ -48,11 +46,6 @@ func main() {
 
 	logger.Infof("opts: %+v", opts)
 
-	if opts.Port == 0 {
-		fmt.Println("Port is required")
-		os.Exit(1)
-	}
-
 	logger.Infof("Starting...")
 
 	moduleManager := modules.NewManager(logger)
@@ -61,14 +54,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	moduleManager.RegisterModule("echoclient", echoclient.NewEchoClientModule(logger))
 	moduleManager.RegisterModule("echo", domain.NewEchoSimpleModule(logger))
 
-	moduleManager.ProvideHandlerRegistrar("echo", "", modules.HandlerRegistrarUnion{
-		GRPC: &modules.GRPCHandlerRegistrar{
-			RegistrarFunc: func(grpcServiceRegistrar grpc.ServiceRegistrar, handler interface{}, logger logging.Logger) {
-				grpcapi.RegisterGRPCHandler(grpcServiceRegistrar, handler, logger)
-			},
-		},
+	moduleManager.ProvideGatewayFactory("echo", "", modules.GatewayFactoryUnion{
+		EnableDirect: true,
 	})
 
 	componentCtx := context.Background()
@@ -87,15 +77,6 @@ func main() {
 		fmt.Println("Failed to start module manager")
 		os.Exit(1)
 	}
-
-	serverConfig := runtime.ServerConfig{
-		GRPC: runtime.GRPCServerConfig{
-			Port: opts.Port,
-		},
-	}
-	server := runtime.NewServer(serverConfig, moduleManager, logger)
-
-	server.Start(operationCtx)
 
 	// Enable signal handling
 	sig := make(chan os.Signal, 1)
@@ -125,7 +106,6 @@ func main() {
 
 	// Stop runtime
 	ctx := context.Background()
-	server.Shutdown(ctx)
 	moduleManager.Stop(ctx)
 
 	logger.Infof("Done")

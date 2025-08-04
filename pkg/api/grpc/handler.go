@@ -1,25 +1,25 @@
-package control
+package grpcapi
 
 import (
 	"context"
 
-	"github.com/core-tools/hsu-echo/pkg/domain"
+	"github.com/core-tools/hsu-core/pkg/logging"
+	"github.com/core-tools/hsu-echo/pkg/contract"
 	"github.com/core-tools/hsu-echo/pkg/generated/api/proto"
-	"github.com/core-tools/hsu-echo/pkg/logging"
 
 	"google.golang.org/grpc"
 )
 
-func RegisterGRPCServerHandler(grpcServerRegistrar grpc.ServiceRegistrar, handler domain.Contract, logger logging.Logger) {
+func RegisterGRPCHandler(grpcServerRegistrar grpc.ServiceRegistrar, handler interface{}, logger logging.Logger) {
 	proto.RegisterEchoServiceServer(grpcServerRegistrar, &grpcServerHandler{
-		handler: handler,
+		handler: handler.(contract.Contract),
 		logger:  logger,
 	})
 }
 
 type grpcServerHandler struct {
 	proto.UnimplementedEchoServiceServer
-	handler domain.Contract
+	handler contract.Contract
 	logger  logging.Logger
 }
 

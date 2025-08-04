@@ -3,11 +3,11 @@ package domain
 import (
 	"context"
 
-	"github.com/core-tools/hsu-echo/pkg/domain"
-	"github.com/core-tools/hsu-echo/pkg/logging"
+	"github.com/core-tools/hsu-core/pkg/logging"
+	"github.com/core-tools/hsu-echo/pkg/contract"
 )
 
-func NewSimpleHandler(logger logging.Logger) domain.Contract {
+func NewSimpleHandler(logger logging.Logger) contract.Contract {
 	return &simpleHandler{
 		logger: logger,
 	}
