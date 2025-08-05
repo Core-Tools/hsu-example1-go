@@ -57,7 +57,7 @@ func main() {
 	moduleManager.RegisterModule("echoclient", echoclient.NewEchoClientModule(logger))
 	moduleManager.RegisterModule("echo", domain.NewEchoSimpleModule(logger))
 
-	moduleManager.ProvideGatewayFactory("echo", "", modules.GatewayFactoryUnion{
+	moduleManager.ProvideGatewayFactory("echo", "", modules.GatewayConfig{
 		EnableDirect: true,
 	})
 

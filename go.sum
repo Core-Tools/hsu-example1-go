@@ -1,5 +1,3 @@
-github.com/core-tools/hsu-core/go v0.0.0-20250804105037-c5ad0603dad5 h1:mMSQU2KNAz0Qwox3YA8+euab0MeIngTaEg1MTxRt+oo=
-github.com/core-tools/hsu-core/go v0.0.0-20250804105037-c5ad0603dad5/go.mod h1:kNWUQgZM1/WSf/lJ1B5gvMNIQk4AGWPhYyQOuo2D+qU=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=

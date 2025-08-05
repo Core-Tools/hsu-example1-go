@@ -94,7 +94,7 @@ func main() {
 
 	moduleManager.RegisterModule("echoclient", echoclient.NewEchoClientModule(logger))
 
-	moduleManager.ProvideGatewayFactory("echo", "", modules.GatewayFactoryUnion{
+	moduleManager.ProvideGatewayFactory("echo", "", modules.GatewayConfig{
 		GRPC: &modules.GRPCGatewayFactory{
 			FactoryFunc: grpcapi.NewGRPCGateway,
 		},

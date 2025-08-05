@@ -2,7 +2,7 @@ module github.com/core-tools/hsu-example1-go
 
 go 1.22.3
 
-replace github.com/core-tools/hsu-core => github.com/core-tools/hsu-core/go v0.0.0-20250804105037-c5ad0603dad5
+replace github.com/core-tools/hsu-core => ../hsu-core/go
 
 replace github.com/core-tools/hsu-echo => .
 

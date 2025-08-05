@@ -63,7 +63,7 @@ func main() {
 
 	moduleManager.RegisterModule("echo", domain.NewEchoSimpleModule(logger))
 
-	moduleManager.ProvideHandlerRegistrar("echo", "", modules.HandlerRegistrarUnion{
+	moduleManager.ProvideHandlerRegistrar("echo", "", modules.HandlerConfig{
 		GRPC: &modules.GRPCHandlerRegistrar{
 			RegistrarFunc: func(grpcServiceRegistrar grpc.ServiceRegistrar, handler interface{}, logger logging.Logger) {
 				grpcapi.RegisterGRPCHandler(grpcServiceRegistrar, handler, logger)
