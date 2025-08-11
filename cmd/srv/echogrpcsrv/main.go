@@ -105,7 +105,7 @@ func main() {
 		signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
 	}
 
-	logger.Infof("All components are ready, starting workers...")
+	logger.Infof("All components are ready, starting managed processes...")
 
 	// Wait for graceful shutdown or timeout
 	select {

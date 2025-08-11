@@ -11,12 +11,12 @@ import (
 
 	"github.com/core-tools/hsu-core/pkg/logging"
 	sprintflogging "github.com/core-tools/hsu-core/pkg/logging/sprintf"
+	"github.com/core-tools/hsu-core/pkg/managedprocess"
+	"github.com/core-tools/hsu-core/pkg/managedprocess/processcontrol"
 	"github.com/core-tools/hsu-core/pkg/modules"
 	"github.com/core-tools/hsu-core/pkg/process"
 	"github.com/core-tools/hsu-core/pkg/processmanager"
 	"github.com/core-tools/hsu-core/pkg/runtime"
-	"github.com/core-tools/hsu-core/pkg/workers"
-	"github.com/core-tools/hsu-core/pkg/workers/processcontrol"
 	"github.com/core-tools/hsu-echo/cmd/cli/echoclient"
 	grpcapi "github.com/core-tools/hsu-echo/pkg/api/grpc"
 
@@ -62,10 +62,10 @@ func main() {
 	processManagerOptions := processmanager.ProcessManagerOptions{}
 	processManager := processmanager.NewProcessManager(processManagerOptions, logger)
 
-	workersArr := make([]workers.Worker, 0)
+	workersArr := make([]managedprocess.Worker, 0)
 	{
-		unit := &workers.IntegratedUnit{
-			Metadata: workers.UnitMetadata{
+		unit := &managedprocess.IntegratedUnit{
+			Metadata: managedprocess.UnitMetadata{
 				Name: "Echo Server",
 			},
 			Control: processcontrol.ManagedProcessControlConfig{
@@ -74,7 +74,7 @@ func main() {
 				},
 			},
 		}
-		worker := workers.NewIntegratedWorker("echo", unit, logger)
+		worker := managedprocess.NewIntegratedWorker("echo", unit, logger)
 		workersArr = append(workersArr, worker)
 	}
 
@@ -131,25 +131,25 @@ func main() {
 		signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
 	}
 
-	logger.Infof("All components are ready, starting workers...")
+	logger.Infof("All components are ready, starting managed processes...")
 
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 
-		// Start all workers (lifecycle phase)
+		// Start all managed processes (lifecycle phase)
 		for _, worker := range workersArr {
 			err := processManager.StartWorker(componentCtx, worker.ID())
 			if err != nil {
 				logger.Errorf("Failed to start worker %s: %v", worker.ID(), err)
-				// Continue with other workers rather than failing completely
+				// Continue with other managed processes rather than failing completely
 				continue
 			}
 			logger.Infof("Started worker: %s", worker.ID())
 		}
 
-		logger.Infof("All workers started, process manager is fully operational")
+		logger.Infof("All managed processes started, process manager is fully operational")
 	}()
 
 	// Wait for graceful shutdown or timeout
@@ -166,9 +166,9 @@ func main() {
 		logger.Infof("Process manager runner timed out")
 	}
 
-	logger.Infof("Waiting for workers start to finish...")
+	logger.Infof("Waiting for managed processes start to finish...")
 
-	// Wait for starting workers to finish
+	// Wait for starting managed processes to finish
 	wg.Wait()
 
 	logger.Infof("Ready to stop components...")
