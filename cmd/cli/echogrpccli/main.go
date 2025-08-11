@@ -11,9 +11,9 @@ import (
 
 	"github.com/core-tools/hsu-core/pkg/logging"
 	sprintflogging "github.com/core-tools/hsu-core/pkg/logging/sprintf"
-	"github.com/core-tools/hsu-core/pkg/master"
 	"github.com/core-tools/hsu-core/pkg/modules"
 	"github.com/core-tools/hsu-core/pkg/process"
+	"github.com/core-tools/hsu-core/pkg/processmanager"
 	"github.com/core-tools/hsu-core/pkg/runtime"
 	"github.com/core-tools/hsu-core/pkg/workers"
 	"github.com/core-tools/hsu-core/pkg/workers/processcontrol"
@@ -59,8 +59,8 @@ func main() {
 
 	logger.Infof("Starting...")
 
-	masterOptions := master.MasterOptions{}
-	workersMaster := master.NewMaster(masterOptions, logger)
+	processManagerOptions := processmanager.ProcessManagerOptions{}
+	processManager := processmanager.NewProcessManager(processManagerOptions, logger)
 
 	workersArr := make([]workers.Worker, 0)
 	{
@@ -79,7 +79,7 @@ func main() {
 	}
 
 	for _, worker := range workersArr {
-		err = workersMaster.AddWorker(worker)
+		err = processManager.AddWorker(worker)
 		if err != nil {
 			fmt.Println("Failed to add worker")
 			os.Exit(1)
@@ -103,9 +103,9 @@ func main() {
 	componentCtx := context.Background()
 	operationCtx := componentCtx
 
-	err = workersMaster.Start(operationCtx)
+	err = processManager.Start(operationCtx)
 	if err != nil {
-		fmt.Println("Failed to start workers master")
+		fmt.Println("Failed to start process manager")
 		os.Exit(1)
 	}
 
@@ -115,7 +115,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	gatewayFactory := runtime.NewGatewayFactory(moduleManager, workersMaster, logger)
+	gatewayFactory := runtime.NewGatewayFactory(moduleManager, processManager, logger)
 
 	err = moduleManager.Start(operationCtx, gatewayFactory)
 	if err != nil {
@@ -140,7 +140,7 @@ func main() {
 
 		// Start all workers (lifecycle phase)
 		for _, worker := range workersArr {
-			err := workersMaster.StartWorker(componentCtx, worker.ID())
+			err := processManager.StartWorker(componentCtx, worker.ID())
 			if err != nil {
 				logger.Errorf("Failed to start worker %s: %v", worker.ID(), err)
 				// Continue with other workers rather than failing completely
@@ -149,13 +149,13 @@ func main() {
 			logger.Infof("Started worker: %s", worker.ID())
 		}
 
-		logger.Infof("All workers started, master is fully operational")
+		logger.Infof("All workers started, process manager is fully operational")
 	}()
 
 	// Wait for graceful shutdown or timeout
 	select {
 	case receivedSignal := <-sig:
-		logger.Infof("Master runner received signal: %v", receivedSignal)
+		logger.Infof("Process manager runner received signal: %v", receivedSignal)
 		if osruntime.GOOS == "windows" {
 			if receivedSignal != os.Interrupt {
 				logger.Errorf("Wrong signal received: got %q, want %q\n", receivedSignal, os.Interrupt)
@@ -163,7 +163,7 @@ func main() {
 			}
 		}
 	case <-operationCtx.Done():
-		logger.Infof("Master runner timed out")
+		logger.Infof("Process manager runner timed out")
 	}
 
 	logger.Infof("Waiting for workers start to finish...")
@@ -176,7 +176,7 @@ func main() {
 	// Stop runtime
 	ctx := context.Background()
 	moduleManager.Stop(ctx)
-	workersMaster.Stop(ctx)
+	processManager.Stop(ctx)
 
 	logger.Infof("Done")
 }

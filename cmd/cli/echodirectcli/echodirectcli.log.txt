@@ -7,7 +7,7 @@ C:\Projects\go\src\github.com\core-tools\hsu-example1-go\cmd\cli\echodirectcli>e
 2025/08/04 16:11:32 Echo response: go-simple-echo: Hello, World!
 2025/08/04 16:11:42 Echo request: Hello, World!
 2025/08/04 16:11:42 Echo response: go-simple-echo: Hello, World!
-2025/08/04 16:11:43 Master runner received signal: interrupt
+2025/08/04 16:11:43 Process manager runner received signal: interrupt
 2025/08/04 16:11:43 Ready to stop components...
 2025/08/04 16:11:43 Echo client loop stopped
 2025/08/04 16:11:43 Done

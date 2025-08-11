@@ -5,8 +5,8 @@ C:\Projects\go\src\github.com\core-tools\hsu-example1-go\cmd\cli\echogrpccli>ech
 2025/08/04 16:13:08 Worker state transition, worker: echo, unknown->registered, operation: add
 2025/08/04 16:13:08 Using provided context-aware restart configuration for worker echo
 2025/08/04 16:13:08 Worker added successfully, id: echo, state: registered
-2025/08/04 16:13:08 Starting master...
-2025/08/04 16:13:08 Master started
+2025/08/04 16:13:08 Starting process manager...
+2025/08/04 16:13:08 Process manager started
 2025/08/04 16:13:08 All components are ready, starting workers...
 2025/08/04 16:13:08 Starting worker, id: echo
 2025/08/04 16:13:08 Worker state transition, worker: echo, registered->starting, operation: start
@@ -15,9 +15,9 @@ C:\Projects\go\src\github.com\core-tools\hsu-example1-go\cmd\cli\echogrpccli>ech
 2025/08/04 16:13:08 Starting process for worker echo, can_attach: true, can_execute: true, can_terminate: true
 2025/08/04 16:13:08 Attempting to attach to existing process, worker: echo
 2025/08/04 16:13:08 Attaching to integrated worker, id: echo
-2025/08/04 16:13:08 Attaching to process, id: echo, discovery config: {Method:pid-file ProcessName: ProcessArgs:[] Port:0 Protocol: PIDFile:C:\Users\alexey.trunov\AppData\Local\hsu-master\echo.pid ServiceName: CheckInterval:30s}
+2025/08/04 16:13:08 Attaching to process, id: echo, discovery config: {Method:pid-file ProcessName: ProcessArgs:[] Port:0 Protocol: PIDFile:C:\Users\alexey.trunov\AppData\Local\hsu-process-manager\echo.pid ServiceName: CheckInterval:30s}
 2025/08/04 16:13:08 Starting process discovery, id: echo, method: pid-file
-2025/08/04 16:13:08 Discovering process by PID file, id: echo, file: C:\Users\alexey.trunov\AppData\Local\hsu-master\echo.pid
+2025/08/04 16:13:08 Discovering process by PID file, id: echo, file: C:\Users\alexey.trunov\AppData\Local\hsu-process-manager\echo.pid
 2025/08/04 16:13:08 Failed to discover process, id: echo, method: pid-file, error: process: failed to find process: OpenProcess: The parameter is incorrect.
 2025/08/04 16:13:08 Failed to attach to existing process, worker: echo, error: discovery: failed to discover process: process: failed to find process: OpenProcess: The parameter is incorrect.
 2025/08/04 16:13:08 Executing new process, worker: echo
@@ -27,12 +27,12 @@ C:\Projects\go\src\github.com\core-tools\hsu-example1-go\cmd\cli\echogrpccli>ech
 2025/08/04 16:13:08 Executing process: id: echo, executable path: '..\..\srv\echogrpcsrv\echogrpcsrv.exe', args: [--port 51921], working directory: 'C:\Projects\go\src\github.com\core-tools\hsu-example1-go\cmd\srv\echogrpcsrv'
 2025/08/04 16:13:08 Executing process, id: echo, cmd: ..\..\srv\echogrpcsrv\echogrpcsrv.exe --port 51921
 2025/08/04 16:13:08 Successfully executed process, id: echo, PID: 15944
-2025/08/04 16:13:08 Writing PID file, worker: echo, pid: 15944, path: C:\Users\alexey.trunov\AppData\Local\hsu-master\echo.pid
-2025/08/04 16:13:08 PID file written successfully, worker: echo, pid: 15944, path: C:\Users\alexey.trunov\AppData\Local\hsu-master\echo.pid
-2025/08/04 16:13:08 PID file written for worker echo: C:\Users\alexey.trunov\AppData\Local\hsu-master\echo.pid (PID: 15944)
-2025/08/04 16:13:08 Writing port file, worker: echo, port: 51921, path: C:\Users\alexey.trunov\AppData\Local\hsu-master\echo.port
-2025/08/04 16:13:09 Port file written successfully, worker: echo, port: 51921, path: C:\Users\alexey.trunov\AppData\Local\hsu-master\echo.port
-2025/08/04 16:13:09 Port file written for worker echo: C:\Users\alexey.trunov\AppData\Local\hsu-master\echo.port (port: 51921)
+2025/08/04 16:13:08 Writing PID file, worker: echo, pid: 15944, path: C:\Users\alexey.trunov\AppData\Local\hsu-process-manager\echo.pid
+2025/08/04 16:13:08 PID file written successfully, worker: echo, pid: 15944, path: C:\Users\alexey.trunov\AppData\Local\hsu-process-manager\echo.pid
+2025/08/04 16:13:08 PID file written for worker echo: C:\Users\alexey.trunov\AppData\Local\hsu-process-manager\echo.pid (PID: 15944)
+2025/08/04 16:13:08 Writing port file, worker: echo, port: 51921, path: C:\Users\alexey.trunov\AppData\Local\hsu-process-manager\echo.port
+2025/08/04 16:13:09 Port file written successfully, worker: echo, port: 51921, path: C:\Users\alexey.trunov\AppData\Local\hsu-process-manager\echo.port
+2025/08/04 16:13:09 Port file written for worker echo: C:\Users\alexey.trunov\AppData\Local\hsu-process-manager\echo.port (port: 51921)
 2025/08/04 16:13:09 Created dynamic gRPC health check for executed process 15944: &{grpc {  map[]} {localhost:51921 CoreService Ping map[]} { 0} { []} {false 0s 0s 0s 0}}
 2025/08/04 16:13:09 Integrated worker executed successfully, id: echo, PID: 15944
 2025/08/04 16:13:09 New process started successfully, worker: echo, PID: 15944
@@ -55,7 +55,7 @@ C:\Projects\go\src\github.com\core-tools\hsu-example1-go\cmd\cli\echogrpccli>ech
 2025/08/04 16:13:09 Worker state transition, worker: echo, starting->running, operation: start
 2025/08/04 16:13:09 Worker started successfully, id: echo, state: running
 2025/08/04 16:13:09 Started worker: echo
-2025/08/04 16:13:09 All workers started, master is fully operational
+2025/08/04 16:13:09 All workers started, process manager is fully operational
 2025/08/04 16:13:18 Echo request: Hello, World!
 2025/08/04 16:13:18 Echo client gateway done
 2025/08/04 16:13:18 Echo response: go-simple-echo: Hello, World!
@@ -64,11 +64,11 @@ C:\Projects\go\src\github.com\core-tools\hsu-example1-go\cmd\cli\echogrpccli>ech
 2025/08/04 16:13:28 Echo client gateway done
 2025/08/04 16:13:28 Echo response: go-simple-echo: Hello, World!
 2025/08/04 16:13:29 Windows resource usage for PID 15944: Memory RSS: 10MB, CPU: 0.0%, Handles: 121
-2025/08/04 16:13:31 Master runner received signal: interrupt
+2025/08/04 16:13:31 Process manager runner received signal: interrupt
 2025/08/04 16:13:31 Waiting for workers start to finish...
 2025/08/04 16:13:31 Ready to stop components...
 2025/08/04 16:13:31 Echo client loop stopped
-2025/08/04 16:13:31 Stopping master...
+2025/08/04 16:13:31 Stopping process manager...
 2025/08/04 16:13:31 Stopping process controls...
 2025/08/04 16:13:31 Stopping process control...
 2025/08/04 16:13:31 State transition: -> stopping, worker: echo
@@ -88,5 +88,5 @@ C:\Projects\go\src\github.com\core-tools\hsu-example1-go\cmd\cli\echogrpccli>ech
 2025/08/04 16:13:31 State transition: stopping -> idle, worker: echo
 2025/08/04 16:13:31 Process control stopped successfully
 2025/08/04 16:13:31 Process controls stopped.
-2025/08/04 16:13:31 Master stopped
+2025/08/04 16:13:31 Process manager stopped
 2025/08/04 16:13:31 Done
