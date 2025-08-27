@@ -62,10 +62,10 @@ func main() {
 	processManagerOptions := processmanager.ProcessManagerOptions{}
 	processManager := processmanager.NewProcessManager(processManagerOptions, logger)
 
-	workersArr := make([]managedprocess.Worker, 0)
+	processOptionsArr := make([]managedprocess.ProcessOptions, 0)
 	{
-		unit := &managedprocess.IntegratedUnit{
-			Metadata: managedprocess.UnitMetadata{
+		unit := &managedprocess.IntegratedManagedProcessConfig{
+			Metadata: managedprocess.ProcessMetadata{
 				Name: "Echo Server",
 			},
 			Control: processcontrol.ManagedProcessControlConfig{
@@ -74,12 +74,12 @@ func main() {
 				},
 			},
 		}
-		worker := managedprocess.NewIntegratedWorker("echo", unit, logger)
-		workersArr = append(workersArr, worker)
+		processOptions := managedprocess.NewIntegratedManagedProcessOptions("echo", unit, logger)
+		processOptionsArr = append(processOptionsArr, processOptions)
 	}
 
-	for _, worker := range workersArr {
-		err = processManager.AddWorker(worker)
+	for _, processOptions := range processOptionsArr {
+		err = processManager.AddProcess(processOptions)
 		if err != nil {
 			fmt.Println("Failed to add worker")
 			os.Exit(1)
@@ -139,14 +139,14 @@ func main() {
 		defer wg.Done()
 
 		// Start all managed processes (lifecycle phase)
-		for _, worker := range workersArr {
-			err := processManager.StartWorker(componentCtx, worker.ID())
+		for _, processOptions := range processOptionsArr {
+			err := processManager.StartProcess(componentCtx, processOptions.ID())
 			if err != nil {
-				logger.Errorf("Failed to start worker %s: %v", worker.ID(), err)
+				logger.Errorf("Failed to start process %s: %v", processOptions.ID(), err)
 				// Continue with other managed processes rather than failing completely
 				continue
 			}
-			logger.Infof("Started worker: %s", worker.ID())
+			logger.Infof("Started process: %s", processOptions.ID())
 		}
 
 		logger.Infof("All managed processes started, process manager is fully operational")
