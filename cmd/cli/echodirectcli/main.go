@@ -4,14 +4,11 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"os/signal"
-	osruntime "runtime"
-	"syscall"
 
 	"github.com/core-tools/hsu-core/pkg/logging"
 	sprintflogging "github.com/core-tools/hsu-core/pkg/logging/sprintf"
-	"github.com/core-tools/hsu-core/pkg/modules"
-	"github.com/core-tools/hsu-core/pkg/runtime"
+	"github.com/core-tools/hsu-core/pkg/modulemanagement"
+	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
 	"github.com/core-tools/hsu-echo/cmd/cli/echoclient"
 	"github.com/core-tools/hsu-echo/pkg/domain"
 
@@ -28,7 +25,7 @@ func main() {
 	var err error
 	_, err = parser.ParseArgs(argv)
 	if err != nil {
-		fmt.Printf("Command line flags parsing failed: %v", err)
+		fmt.Printf("Command line flags parsing failed: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -48,65 +45,46 @@ func main() {
 
 	logger.Infof("Starting...")
 
-	moduleManager := modules.NewManager(logger)
-	if err != nil {
-		fmt.Println("Failed to create module manager")
-		os.Exit(1)
-	}
-
-	moduleManager.RegisterModule("echoclient", echoclient.NewEchoClientModule(logger))
-	moduleManager.RegisterModule("echo", domain.NewEchoSimpleModule(logger))
-
-	moduleManager.ProvideGatewayFactory("echo", "", modules.GatewayConfig{
-		EnableDirect: true,
-	})
-
 	componentCtx := context.Background()
 	operationCtx := componentCtx
 
-	err = moduleManager.Initialize()
+	module1 := domain.NewEchoModule(logger)
+	module2 := echoclient.NewEchoClientModule(logger)
+	modules := []moduletypes.Module{
+		module1,
+		module2,
+	}
+
+	runtimeOptions := modulemanagement.RuntimeOptions{
+		Modules: modules,
+		Logger:  logger,
+	}
+
+	runtime, err := modulemanagement.NewRuntime(runtimeOptions)
 	if err != nil {
-		fmt.Println("Failed to initialize module manager")
+		fmt.Printf("Failed to create runtime: %v\n", err)
 		os.Exit(1)
 	}
 
-	gatewayFactory := runtime.NewGatewayFactory(moduleManager, nil, logger)
-
-	err = moduleManager.Start(operationCtx, gatewayFactory)
+	err = runtime.Start(operationCtx)
 	if err != nil {
-		fmt.Println("Failed to start module manager")
+		fmt.Printf("Failed to start runtime: %v\n", err)
 		os.Exit(1)
 	}
 
-	// Enable signal handling
-	sig := make(chan os.Signal, 1)
-	if osruntime.GOOS == "windows" {
-		signal.Notify(sig) // Unix signals not implemented on Windows
-	} else {
-		signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
-	}
+	logger.Infof("Runtime is ready")
 
-	logger.Infof("All components are ready, starting managed processes...")
+	modulemanagement.WaitSignals(operationCtx, logger)
 
-	// Wait for graceful shutdown or timeout
-	select {
-	case receivedSignal := <-sig:
-		logger.Infof("Master runner received signal: %v", receivedSignal)
-		if osruntime.GOOS == "windows" {
-			if receivedSignal != os.Interrupt {
-				logger.Errorf("Wrong signal received: got %q, want %q\n", receivedSignal, os.Interrupt)
-				os.Exit(42)
-			}
-		}
-	case <-operationCtx.Done():
-		logger.Infof("Master runner timed out")
-	}
-
-	logger.Infof("Ready to stop components...")
+	logger.Infof("About to stop runtime...")
 
 	// Stop runtime
 	ctx := context.Background()
-	moduleManager.Stop(ctx)
+	err = runtime.Stop(ctx)
+	if err != nil {
+		fmt.Printf("Failed to stop runtime: %v\n", err)
+		os.Exit(1)
+	}
 
 	logger.Infof("Done")
 }

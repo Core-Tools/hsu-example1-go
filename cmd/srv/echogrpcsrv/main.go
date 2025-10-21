@@ -4,17 +4,15 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"os/signal"
-	osruntime "runtime"
-	"syscall"
 
 	"github.com/core-tools/hsu-core/pkg/logging"
 	sprintflogging "github.com/core-tools/hsu-core/pkg/logging/sprintf"
-	"github.com/core-tools/hsu-core/pkg/modules"
-	"github.com/core-tools/hsu-core/pkg/runtime"
+	"github.com/core-tools/hsu-core/pkg/modulemanagement"
+	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduleapi"
+	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduleproto"
+	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
 	grpcapi "github.com/core-tools/hsu-echo/pkg/api/grpc"
 	"github.com/core-tools/hsu-echo/pkg/domain"
-	"google.golang.org/grpc"
 
 	flags "github.com/jessevdk/go-flags"
 )
@@ -30,7 +28,7 @@ func main() {
 	var err error
 	_, err = parser.ParseArgs(argv)
 	if err != nil {
-		fmt.Printf("Command line flags parsing failed: %v", err)
+		fmt.Printf("Command line flags parsing failed: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -48,85 +46,68 @@ func main() {
 
 	logger.Infof("opts: %+v", opts)
 
-	if opts.Port == 0 {
-		fmt.Println("Port is required")
-		os.Exit(1)
-	}
-
 	logger.Infof("Starting...")
 
-	moduleManager := modules.NewManager(logger)
-	if err != nil {
-		fmt.Println("Failed to create module manager")
-		os.Exit(1)
-	}
-
-	moduleManager.RegisterModule("echo", domain.NewEchoSimpleModule(logger))
-
-	moduleManager.ProvideHandlerRegistrar("echo", "", modules.HandlerConfig{
-		GRPC: &modules.GRPCHandlerRegistrar{
-			RegistrarFunc: func(grpcServiceRegistrar grpc.ServiceRegistrar, handler interface{}, logger logging.Logger) {
-				grpcapi.RegisterGRPCHandler(grpcServiceRegistrar, handler, logger)
-			},
-		},
-	})
+	// 'echo' server module, remotely-accessible via gRPC
 
 	componentCtx := context.Background()
 	operationCtx := componentCtx
 
-	err = moduleManager.Initialize()
-	if err != nil {
-		fmt.Println("Failed to initialize module manager")
-		os.Exit(1)
+	module1 := domain.NewEchoModule(logger)
+	modules := []moduletypes.Module{
+		module1,
 	}
-
-	gatewayFactory := runtime.NewGatewayFactory(moduleManager, nil, logger)
-
-	err = moduleManager.Start(operationCtx, gatewayFactory)
-	if err != nil {
-		fmt.Println("Failed to start module manager")
-		os.Exit(1)
-	}
-
-	serverConfig := runtime.ServerConfig{
-		GRPC: runtime.GRPCServerConfig{
-			Port: opts.Port,
+	server1ID := moduleproto.ServerID("echogrpcsrv")
+	serverOptions := moduleproto.ServerOptionsList{
+		moduleproto.ServerOptions{
+			ServerID: server1ID,
+			Protocol: moduletypes.ProtocolGRPC,
+			ProtocolOptions: moduleproto.GRPCServerOptions{
+				Port: opts.Port, // this is only a config hint, could be 0 for dynamic port allocation
+			},
 		},
 	}
-	server := runtime.NewServer(serverConfig, moduleManager, logger)
-
-	server.Start(operationCtx)
-
-	// Enable signal handling
-	sig := make(chan os.Signal, 1)
-	if osruntime.GOOS == "windows" {
-		signal.Notify(sig) // Unix signals not implemented on Windows
-	} else {
-		signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+	moduleHandlersConfigs := []moduleapi.ModuleHandlersConfig{
+		{
+			ModuleID:              module1.ID(),
+			ServerID:              server1ID,
+			Protocol:              moduletypes.ProtocolGRPC,
+			HandlersRegistrarFunc: grpcapi.RegisterHandlers,
+		},
 	}
 
-	logger.Infof("All components are ready, starting managed processes...")
-
-	// Wait for graceful shutdown or timeout
-	select {
-	case receivedSignal := <-sig:
-		logger.Infof("Master runner received signal: %v", receivedSignal)
-		if osruntime.GOOS == "windows" {
-			if receivedSignal != os.Interrupt {
-				logger.Errorf("Wrong signal received: got %q, want %q\n", receivedSignal, os.Interrupt)
-				os.Exit(42)
-			}
-		}
-	case <-operationCtx.Done():
-		logger.Infof("Master runner timed out")
+	runtimeOptions := modulemanagement.RuntimeOptions{
+		Modules:               modules,
+		ServerOptions:         serverOptions,
+		ModuleHandlersConfigs: moduleHandlersConfigs,
+		Logger:                logger,
 	}
 
-	logger.Infof("Ready to stop components...")
+	runtime, err := modulemanagement.NewRuntime(runtimeOptions)
+	if err != nil {
+		fmt.Printf("Failed to create runtime: %v\n", err)
+		os.Exit(1)
+	}
+
+	err = runtime.Start(operationCtx)
+	if err != nil {
+		fmt.Printf("Failed to start runtime: %v\n", err)
+		os.Exit(1)
+	}
+
+	logger.Infof("Runtime is ready")
+
+	modulemanagement.WaitSignals(operationCtx, logger)
+
+	logger.Infof("About to stop runtime...")
 
 	// Stop runtime
 	ctx := context.Background()
-	server.Shutdown(ctx)
-	moduleManager.Stop(ctx)
+	err = runtime.Stop(ctx)
+	if err != nil {
+		fmt.Printf("Failed to stop runtime: %v\n", err)
+		os.Exit(1)
+	}
 
 	logger.Infof("Done")
 }

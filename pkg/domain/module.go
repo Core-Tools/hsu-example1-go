@@ -4,36 +4,42 @@ import (
 	"context"
 
 	"github.com/core-tools/hsu-core/pkg/logging"
-	"github.com/core-tools/hsu-core/pkg/modules"
+	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
 	"github.com/core-tools/hsu-echo/pkg/contract"
 )
 
 const id = "echo"
 
-type echoSimple struct {
-	handler contract.Contract
+type echoModule struct {
+	service1 contract.Contract1
+	service2 contract.Contract2
 }
 
-func NewEchoSimpleModule(logger logging.Logger) modules.Module {
-	return &echoSimple{
-		handler: NewSimpleHandler(logger),
+func NewEchoModule(logger logging.Logger) moduletypes.Module {
+	return &echoModule{
+		service1: NewService1(logger),
+		service2: NewService2(logger),
 	}
 }
 
-func (m *echoSimple) ID() string {
+func (m *echoModule) ID() moduletypes.ModuleID {
 	return id
 }
 
-func (m *echoSimple) Initialize(directClosureProvider modules.DirectClosureProvider) error {
-	directClosureProvider.ProvideDirectClosure(id, "", m.handler)
+func (m *echoModule) SetServiceGatewayFactory(factory moduletypes.ServiceGatewayFactory) {
+}
 
+func (m *echoModule) ServiceHandlersMap() moduletypes.ServiceHandlersMap {
+	return moduletypes.ServiceHandlersMap{
+		"service1": m.service1,
+		"service2": m.service2,
+	}
+}
+
+func (m *echoModule) Start(ctx context.Context) error {
 	return nil
 }
 
-func (m *echoSimple) Start(ctx context.Context, gatewayFactory modules.GatewayFactory) error {
-	return nil
-}
-
-func (m *echoSimple) Stop(ctx context.Context) error {
+func (m *echoModule) Stop(ctx context.Context) error {
 	return nil
 }
