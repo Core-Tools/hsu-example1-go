@@ -1,0 +1,18 @@
+C:\Projects\core-tools\current\hsu-example1-go\cmd\cli\echodirectcli>echodirectcli.exe
+2025/10/21 23:55:51 opts: {}
+2025/10/21 23:55:51 Starting...
+2025/10/21 23:55:51 Service gateway factory created
+2025/10/21 23:55:51 Runtime is ready
+2025/10/21 23:55:51 Starting echo client loop
+2025/10/21 23:56:01 Creating gateway for module: echo, service: service1, protocol: auto
+2025/10/21 23:56:01 Module client: Service1.Echo1 request: Hello, World!
+2025/10/21 23:56:01 Module: Service1.Echo1 called: Hello, World!
+2025/10/21 23:56:01 Module client: Service1.Echo1 response: Hello, World!
+2025/10/21 23:56:11 Creating gateway for module: echo, service: service1, protocol: auto
+2025/10/21 23:56:11 Module client: Service1.Echo1 request: Hello, World!
+2025/10/21 23:56:11 Module: Service1.Echo1 called: Hello, World!
+2025/10/21 23:56:11 Module client: Service1.Echo1 response: Hello, World!
+2025/10/21 23:56:15 Received signal: interrupt
+2025/10/21 23:56:15 About to stop runtime...
+2025/10/21 23:56:15 Echo client loop stopped
+2025/10/21 23:56:15 Done

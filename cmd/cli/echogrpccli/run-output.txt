@@ -1,0 +1,28 @@
+C:\Projects\core-tools\current\hsu-example1-go\cmd\cli\echogrpccli>echogrpccli.exe
+2025/10/22 01:54:52 opts: {}
+2025/10/22 01:54:52 Starting...
+2025/10/22 01:54:52 Service gateway factory created
+2025/10/22 01:54:52 Runtime is ready
+2025/10/22 01:54:52 Starting echo client loop
+2025/10/22 01:55:02 Creating gateway for module: echo, service: service1, protocol: auto
+2025/10/22 01:55:02 Discovered 1 APIs for module echo
+2025/10/22 01:55:02 Connecting to gRPC server at address: localhost:61570
+2025/10/22 01:55:02 Using default insecure gRPC dial options
+2025/10/22 01:55:02 gRPC client connection created successfully at localhost:61570
+2025/10/22 01:55:02 Module client: Service1.Echo1 request: Hello, World!
+2025/10/22 01:55:02 gRPC Gateway: Service1.Echo1 request: Hello, World!
+2025/10/22 01:55:02 gRPC Gateway: Service1.Echo1 response: Hello, World!
+2025/10/22 01:55:02 Module client: Service1.Echo1 response: Hello, World!
+2025/10/22 01:55:12 Creating gateway for module: echo, service: service1, protocol: auto
+2025/10/22 01:55:12 Discovered 1 APIs for module echo
+2025/10/22 01:55:12 Connecting to gRPC server at address: localhost:61570
+2025/10/22 01:55:12 Using default insecure gRPC dial options
+2025/10/22 01:55:12 gRPC client connection created successfully at localhost:61570
+2025/10/22 01:55:12 Module client: Service1.Echo1 request: Hello, World!
+2025/10/22 01:55:12 gRPC Gateway: Service1.Echo1 request: Hello, World!
+2025/10/22 01:55:12 gRPC Gateway: Service1.Echo1 response: Hello, World!
+2025/10/22 01:55:12 Module client: Service1.Echo1 response: Hello, World!
+2025/10/22 01:55:20 Received signal: interrupt
+2025/10/22 01:55:20 About to stop runtime...
+2025/10/22 01:55:20 Echo client loop stopped
+2025/10/22 01:55:20 Done
