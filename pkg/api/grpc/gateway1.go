@@ -1,24 +1,20 @@
-package grpcapi
+package echogrpcapi
 
 import (
 	"context"
 
 	"github.com/core-tools/hsu-core/pkg/logging"
-	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduleproto"
-	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
-	"github.com/core-tools/hsu-echo/pkg/contract"
+	echocontract "github.com/core-tools/hsu-echo/pkg/api/contract"
 	"github.com/core-tools/hsu-echo/pkg/generated/api/proto"
 
 	"google.golang.org/grpc"
 )
 
-func NewGRPCGateway1(clientConnection moduleproto.ProtocolClientConnection, logger logging.Logger) moduletypes.ServiceGateway {
-	grpcClientConnection := clientConnection.(*grpc.ClientConn)
-	grpcClient := proto.NewEchoServiceClient(grpcClientConnection)
+func NewGRPCGateway1(grpcClientConnection *grpc.ClientConn, logger logging.Logger) (echocontract.Service1, error) {
 	return &grpcGateway1{
-		grpcClient: grpcClient,
+		grpcClient: proto.NewEchoServiceClient(grpcClientConnection),
 		logger:     logger,
-	}
+	}, nil
 }
 
 type grpcGateway1 struct {
@@ -48,4 +44,4 @@ func (gw *grpcGateway1) Echo2(ctx context.Context, message string) (string, erro
 	return response.Message, nil
 }
 
-var _ contract.Contract1 = (*grpcGateway1)(nil)
+var _ echocontract.Service1 = (*grpcGateway1)(nil)

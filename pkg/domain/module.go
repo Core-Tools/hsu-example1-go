@@ -1,39 +1,32 @@
-package domain
+package echodomain
 
 import (
 	"context"
 
 	"github.com/core-tools/hsu-core/pkg/logging"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
-	"github.com/core-tools/hsu-echo/pkg/contract"
+	echocontract "github.com/core-tools/hsu-echo/pkg/api/contract"
 )
 
-const id = "echo"
+type EchoServiceProvider interface {
+}
+
+func NewEchoModule(serviceProvider EchoServiceProvider, logger logging.Logger) (moduletypes.Module, echocontract.EchoServiceHandlers, error) {
+	module := &echoModule{
+		service1: NewHandler1(logger),
+		service2: NewHandler2(logger),
+	}
+	return module,
+		echocontract.EchoServiceHandlers{
+			Service1: module.service1,
+			Service2: module.service2,
+		},
+		nil
+}
 
 type echoModule struct {
-	service1 contract.Contract1
-	service2 contract.Contract2
-}
-
-func NewEchoModule(logger logging.Logger) moduletypes.Module {
-	return &echoModule{
-		service1: NewService1(logger),
-		service2: NewService2(logger),
-	}
-}
-
-func (m *echoModule) ID() moduletypes.ModuleID {
-	return id
-}
-
-func (m *echoModule) SetServiceGatewayFactory(factory moduletypes.ServiceGatewayFactory) {
-}
-
-func (m *echoModule) ServiceHandlersMap() moduletypes.ServiceHandlersMap {
-	return moduletypes.ServiceHandlersMap{
-		"service1": m.service1,
-		"service2": m.service2,
-	}
+	service1 echocontract.Service1
+	service2 echocontract.Service2
 }
 
 func (m *echoModule) Start(ctx context.Context) error {

@@ -9,16 +9,14 @@ import (
 	sprintflogging "github.com/core-tools/hsu-core/pkg/logging/sprintf"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduleapi"
-	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduleproto"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
+	"github.com/core-tools/hsu-echo/cmd/cli/echoclient"
 	grpcapi "github.com/core-tools/hsu-echo/pkg/api/grpc"
-	"github.com/core-tools/hsu-echo/pkg/domain"
 
 	flags "github.com/jessevdk/go-flags"
 )
 
 type flagOptions struct {
-	Port int `long:"port" description:"port to listen on"`
 }
 
 func main() {
@@ -48,40 +46,25 @@ func main() {
 
 	logger.Infof("Starting...")
 
-	// 'echo' server module, remotely-accessible via gRPC
-
 	componentCtx := context.Background()
 	operationCtx := componentCtx
 
-	module1 := domain.NewEchoModule(logger)
 	modules := []moduletypes.Module{
-		module1,
+		echoclient.NewEchoClientModule(logger),
 	}
-	server1ID := moduleproto.ServerID("echogrpcsrv")
-	serverOptions := moduleproto.ServerOptionsList{
-		moduleproto.ServerOptions{
-			ServerID: server1ID,
-			Protocol: moduletypes.ProtocolGRPC,
-			ProtocolOptions: moduleproto.GRPCServerOptions{
-				Port: opts.Port, // this is only a config hint, could be 0 for dynamic port allocation
-			},
-		},
-	}
-	moduleHandlersConfigs := []moduleapi.ModuleHandlersConfig{
-		{
-			ModuleID: module1.ID(),
-			ServerID: server1ID,
-			Protocol: moduletypes.ProtocolGRPC,
-			HandlerRegistrarFuncs: map[moduletypes.ServiceID]moduleapi.ProtocolHandlersRegistrarFunc{
-				"service1": grpcapi.RegisterGRPCHandler1,
+	moduleGatewayConfigs := moduleapi.ModuleGatewaysConfigMap{
+		"echo": []moduleapi.ServiceGatewayConfig{
+			{
+				ServiceID:          "service1",
+				Protocol:           moduletypes.ProtocolGRPC,
+				GatewayFactoryFunc: grpcapi.NewGRPCGateway1,
 			},
 		},
 	}
 
 	runtimeOptions := modulemanagement.RuntimeOptions{
 		Modules:               modules,
-		ServerOptions:         serverOptions,
-		ModuleHandlersConfigs: moduleHandlersConfigs,
+		ModuleGatewaysConfigs: moduleGatewayConfigs,
 		Logger:                logger,
 	}
 

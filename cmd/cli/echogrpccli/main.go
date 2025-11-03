@@ -1,22 +1,18 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
 
 	"github.com/core-tools/hsu-core/pkg/logging"
 	sprintflogging "github.com/core-tools/hsu-core/pkg/logging/sprintf"
-	"github.com/core-tools/hsu-core/pkg/modulemanagement"
-	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduleapi"
-	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
-	"github.com/core-tools/hsu-echo/cmd/cli/echoclient"
-	grpcapi "github.com/core-tools/hsu-echo/pkg/api/grpc"
+	"github.com/core-tools/hsu-core/pkg/modulemanagement/modulewiring"
 
 	flags "github.com/jessevdk/go-flags"
 )
 
 type flagOptions struct {
+	ConfigFile string `long:"config" description:"path to the config file"`
 }
 
 func main() {
@@ -44,55 +40,9 @@ func main() {
 
 	logger.Infof("opts: %+v", opts)
 
-	logger.Infof("Starting...")
-
-	componentCtx := context.Background()
-	operationCtx := componentCtx
-
-	modules := []moduletypes.Module{
-		echoclient.NewEchoClientModule(logger),
-	}
-	moduleGatewayConfigs := moduleapi.ModuleGatewaysConfigMap{
-		"echo": []moduleapi.ServiceGatewayConfig{
-			{
-				ServiceID:          "service1",
-				Protocol:           moduletypes.ProtocolGRPC,
-				GatewayFactoryFunc: grpcapi.NewGRPCGateway1,
-			},
-		},
-	}
-
-	runtimeOptions := modulemanagement.RuntimeOptions{
-		Modules:               modules,
-		ModuleGatewaysConfigs: moduleGatewayConfigs,
-		Logger:                logger,
-	}
-
-	runtime, err := modulemanagement.NewRuntime(runtimeOptions)
+	err = modulewiring.Run(opts.ConfigFile, logger)
 	if err != nil {
-		fmt.Printf("Failed to create runtime: %v\n", err)
+		logger.Errorf("Failed to run module wiring: %v", err)
 		os.Exit(1)
 	}
-
-	err = runtime.Start(operationCtx)
-	if err != nil {
-		fmt.Printf("Failed to start runtime: %v\n", err)
-		os.Exit(1)
-	}
-
-	logger.Infof("Runtime is ready")
-
-	modulemanagement.WaitSignals(operationCtx, logger)
-
-	logger.Infof("About to stop runtime...")
-
-	// Stop runtime
-	ctx := context.Background()
-	err = runtime.Stop(ctx)
-	if err != nil {
-		fmt.Printf("Failed to stop runtime: %v\n", err)
-		os.Exit(1)
-	}
-
-	logger.Infof("Done")
 }
