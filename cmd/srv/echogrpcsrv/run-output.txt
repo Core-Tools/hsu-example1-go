@@ -1,24 +1,36 @@
 C:\Projects\core-tools\current\hsu-example1-go\cmd\srv\echogrpcsrv>echogrpcsrv.exe
-2025/10/22 01:54:26 opts: {Port:0}
-2025/10/22 01:54:26 Starting...
-2025/10/22 01:54:26 Creating new protocol server for protocol: grpc
-2025/10/22 01:54:26 Creating gRPC server on address: 127.0.0.1:0
-2025/10/22 01:54:26 gRPC server listening at 127.0.0.1:61570
-2025/10/22 01:54:26 Using default gRPC server options
-2025/10/22 01:54:26 Service gateway factory created
-2025/10/22 01:54:26 Published APIs for module echo: 1 endpoints
-2025/10/22 01:54:26 Starting gRPC server at 127.0.0.1:61570
-2025/10/22 01:54:26 Runtime is ready
-2025/10/22 01:55:02 gRPC Handler: Service1.Echo1 request: Hello, World!
-2025/10/22 01:55:02 Module: Service1.Echo1 called: Hello, World!
-2025/10/22 01:55:02 gRPC Handler: Service1.Echo1 response: Hello, World!
-2025/10/22 01:55:12 gRPC Handler: Service1.Echo1 request: Hello, World!
-2025/10/22 01:55:12 Module: Service1.Echo1 called: Hello, World!
-2025/10/22 01:55:12 gRPC Handler: Service1.Echo1 response: Hello, World!
-2025/10/22 01:55:23 Received signal: interrupt
-2025/10/22 01:55:23 About to stop runtime...
-2025/10/22 01:55:23 Stopping server...
-2025/10/22 01:55:23 Stopping gRPC server...
-2025/10/22 01:55:23 gRPC server stopped gracefully
-2025/10/22 01:55:23 Server stopped
-2025/10/22 01:55:23 Done
+2025/11/04 00:59:15 opts: {Port:0}
+2025/11/04 00:59:15 Config: &{Runtime:{Servers:[{ID:server-grpc Protocol:grpc GRPC:{Port:0} HTTP:{Port:0} Enabled:true}] ServiceRegistry:{URL: Timeout:0s}} Modules:[{ID:echo Servers:[server-grpc] Enabled:true}]}
+2025/11/04 00:59:15 Service registry client created
+2025/11/04 00:59:15 Service connector created
+2025/11/04 00:59:15 Service providers created
+2025/11/04 00:59:15 Module: echo
+2025/11/04 00:59:15 Server manager created
+2025/11/04 00:59:15 Creating new protocol server for protocol: grpc
+2025/11/04 00:59:15 Creating gRPC server on address: 127.0.0.1:0
+2025/11/04 00:59:15 gRPC server listening at 127.0.0.1:56312
+2025/11/04 00:59:15 Using default gRPC server options
+2025/11/04 00:59:15 Protocol server server-grpc registered with protocol grpc
+2025/11/04 00:59:15 Protocol server server-grpc (grpc) found for module echo
+2025/11/04 00:59:15 Module echo created
+2025/11/04 00:59:15 Module echo remote APIs: [{ServiceIDs:[service1] ServerPort:56312 Protocol:grpc}]
+2025/11/04 00:59:15 Modules created: 1
+2025/11/04 00:59:15 Remote APIs: [{ModuleID:echo ModuleAPIs:[{ServiceIDs:[service1] ServerPort:56312 Protocol:grpc}]}]
+2025/11/04 00:59:15 Published APIs for module echo: 1 endpoints
+2025/11/04 00:59:15 Remote APIs published
+2025/11/04 00:59:15 Runtime created
+2025/11/04 00:59:15 Starting gRPC server at 127.0.0.1:56312
+2025/11/04 00:59:15 Runtime is ready
+2025/11/04 00:59:49 gRPC Handler: Service1.Echo1 request: Hello, World!
+2025/11/04 00:59:49 Module: Service1.Echo1 called: Hello, World!
+2025/11/04 00:59:49 gRPC Handler: Service1.Echo1 response: Hello, World!
+2025/11/04 00:59:59 gRPC Handler: Service1.Echo1 request: Hello, World!
+2025/11/04 00:59:59 Module: Service1.Echo1 called: Hello, World!
+2025/11/04 00:59:59 gRPC Handler: Service1.Echo1 response: Hello, World!
+2025/11/04 01:00:03 Received signal: interrupt
+2025/11/04 01:00:03 About to stop runtime...
+2025/11/04 01:00:03 Stopping server...
+2025/11/04 01:00:03 Stopping gRPC server...
+2025/11/04 01:00:03 gRPC server stopped gracefully
+2025/11/04 01:00:03 Server stopped
+2025/11/04 01:00:03 Done

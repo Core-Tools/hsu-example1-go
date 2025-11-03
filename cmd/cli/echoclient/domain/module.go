@@ -14,15 +14,13 @@ type EchoClientServiceProvider interface {
 	Echo() echocontract.EchoServiceGateways
 }
 
-func NewEchoClientModule(serviceProvider EchoClientServiceProvider, logger logging.Logger) (moduletypes.Module, moduletypes.EmptyServiceHandlers, error) {
+func NewEchoClientModule(serviceProvider EchoClientServiceProvider, logger logging.Logger) (moduletypes.Module, moduletypes.EmptyServiceHandlers) {
 	module := &echoclientModule{
 		logger:          logger,
 		serviceProvider: serviceProvider,
 		stopChan:        make(chan struct{}),
 	}
-	return module,
-		moduletypes.EmptyServiceHandlers{},
-		nil
+	return module, moduletypes.EmptyServiceHandlers{}
 }
 
 type echoclientModule struct {

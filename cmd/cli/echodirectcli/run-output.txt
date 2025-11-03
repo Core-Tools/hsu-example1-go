@@ -1,18 +1,32 @@
 C:\Projects\core-tools\current\hsu-example1-go\cmd\cli\echodirectcli>echodirectcli.exe
-2025/10/21 23:55:51 opts: {}
-2025/10/21 23:55:51 Starting...
-2025/10/21 23:55:51 Service gateway factory created
-2025/10/21 23:55:51 Runtime is ready
-2025/10/21 23:55:51 Starting echo client loop
-2025/10/21 23:56:01 Creating gateway for module: echo, service: service1, protocol: auto
-2025/10/21 23:56:01 Module client: Service1.Echo1 request: Hello, World!
-2025/10/21 23:56:01 Module: Service1.Echo1 called: Hello, World!
-2025/10/21 23:56:01 Module client: Service1.Echo1 response: Hello, World!
-2025/10/21 23:56:11 Creating gateway for module: echo, service: service1, protocol: auto
-2025/10/21 23:56:11 Module client: Service1.Echo1 request: Hello, World!
-2025/10/21 23:56:11 Module: Service1.Echo1 called: Hello, World!
-2025/10/21 23:56:11 Module client: Service1.Echo1 response: Hello, World!
-2025/10/21 23:56:15 Received signal: interrupt
-2025/10/21 23:56:15 About to stop runtime...
-2025/10/21 23:56:15 Echo client loop stopped
-2025/10/21 23:56:15 Done
+2025/11/04 00:31:20 opts: {}
+2025/11/04 00:31:20 Config: &{Runtime:{Servers:[] ServiceRegistry:{URL: Timeout:0s}} Modules:[{ID:echo Servers:[] Enabled:true} {ID:echo-client Servers:[] Enabled:true}]}
+2025/11/04 00:31:20 Service registry client created
+2025/11/04 00:31:20 Service connector created
+2025/11/04 00:31:20 Service providers created
+2025/11/04 00:31:20 Module: echo
+2025/11/04 00:31:20 Module: echo-client
+2025/11/04 00:31:20 Server manager created
+2025/11/04 00:31:20 Enabling direct closure for module: echo, service IDs: [service1 service2]
+2025/11/04 00:31:20 Module echo created
+2025/11/04 00:31:20 Module echo-client created
+2025/11/04 00:31:20 Modules created: 2
+2025/11/04 00:31:20 Remote APIs: [{ModuleID:echo ModuleAPIs:[]} {ModuleID:echo-client ModuleAPIs:[]}]
+2025/11/04 00:31:20 Published APIs for module echo: 0 endpoints
+2025/11/04 00:31:20 Published APIs for module echo-client: 0 endpoints
+2025/11/04 00:31:20 Remote APIs published
+2025/11/04 00:31:20 Runtime created
+2025/11/04 00:31:20 Runtime is ready
+2025/11/04 00:31:20 Starting echo client loop
+2025/11/04 00:31:30 Connecting to module: echo, service: service1, protocol: auto
+2025/11/04 00:31:30 Module client: Service1.Echo1 request: Hello, World!
+2025/11/04 00:31:30 Module: Service1.Echo1 called: Hello, World!
+2025/11/04 00:31:30 Module client: Service1.Echo1 response: Hello, World!
+2025/11/04 00:31:40 Connecting to module: echo, service: service1, protocol: auto
+2025/11/04 00:31:40 Module client: Service1.Echo1 request: Hello, World!
+2025/11/04 00:31:40 Module: Service1.Echo1 called: Hello, World!
+2025/11/04 00:31:40 Module client: Service1.Echo1 response: Hello, World!
+2025/11/04 00:31:42 Received signal: interrupt
+2025/11/04 00:31:42 About to stop runtime...
+2025/11/04 00:31:42 Echo client loop stopped
+2025/11/04 00:31:42 Done

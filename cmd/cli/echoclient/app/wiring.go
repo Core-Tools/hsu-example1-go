@@ -25,7 +25,7 @@ func init() {
 	modulewiring.RegisterModule("echo-client", moduleDesc)
 }
 
-func NewEchoClientServiceProvider(serviceConnector moduleapi.ServiceConnector, logger logging.Logger) (moduletypes.ServiceProviderHandle, error) {
+func NewEchoClientServiceProvider(serviceConnector moduleapi.ServiceConnector, logger logging.Logger) moduletypes.ServiceProviderHandle {
 	echoServiceGateways := echoapi.NewEchoServiceGateways(serviceConnector, logger)
 	serviceGatewaysMap := moduletypes.ServiceGatewaysMap{
 		echoServiceGateways.ModuleID(): echoServiceGateways,
@@ -34,10 +34,9 @@ func NewEchoClientServiceProvider(serviceConnector moduleapi.ServiceConnector, l
 		echoServiceGateways: echoServiceGateways,
 	}
 	return moduletypes.ServiceProviderHandle{
-			ServiceProvider:    serviceProvider,
-			ServiceGatewaysMap: serviceGatewaysMap,
-		},
-		nil
+		ServiceProvider:    serviceProvider,
+		ServiceGatewaysMap: serviceGatewaysMap,
+	}
 }
 
 type echoClientServiceProvider struct {

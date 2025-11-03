@@ -1,18 +1,16 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
 
 	"github.com/core-tools/hsu-core/pkg/logging"
 	sprintflogging "github.com/core-tools/hsu-core/pkg/logging/sprintf"
-	"github.com/core-tools/hsu-core/pkg/modulemanagement"
-	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduleapi"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduleproto"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
-	grpcapi "github.com/core-tools/hsu-echo/pkg/api/grpc"
-	"github.com/core-tools/hsu-echo/pkg/domain"
+	"github.com/core-tools/hsu-core/pkg/modulemanagement/modulewiring"
+
+	_ "github.com/core-tools/hsu-example1-go/pkg/app"
 
 	flags "github.com/jessevdk/go-flags"
 )
@@ -46,70 +44,30 @@ func main() {
 
 	logger.Infof("opts: %+v", opts)
 
-	logger.Infof("Starting...")
-
-	// 'echo' server module, remotely-accessible via gRPC
-
-	componentCtx := context.Background()
-	operationCtx := componentCtx
-
-	module1 := domain.NewEchoModule(logger)
-	modules := []moduletypes.Module{
-		module1,
-	}
-	server1ID := moduleproto.ServerID("echogrpcsrv")
-	serverOptions := moduleproto.ServerOptionsList{
-		moduleproto.ServerOptions{
-			ServerID: server1ID,
-			Protocol: moduletypes.ProtocolGRPC,
-			ProtocolOptions: moduleproto.GRPCServerOptions{
-				Port: opts.Port, // this is only a config hint, could be 0 for dynamic port allocation
+	config := &modulewiring.Config{
+		Modules: []modulewiring.ModuleConfig{
+			{
+				ID: "echo",
+				Servers: []moduleproto.ServerID{
+					"server-grpc",
+				},
+				Enabled: true,
 			},
 		},
-	}
-	moduleHandlersConfigs := []moduleapi.ModuleHandlersConfig{
-		{
-			ModuleID: module1.ID(),
-			ServerID: server1ID,
-			Protocol: moduletypes.ProtocolGRPC,
-			HandlerRegistrarFuncs: map[moduletypes.ServiceID]moduleapi.ProtocolHandlersRegistrarFunc{
-				"service1": grpcapi.RegisterGRPCHandler1,
+		Runtime: modulewiring.RuntimeConfig{
+			Servers: []modulewiring.ServerConfig{
+				{
+					ID:       "server-grpc",
+					Protocol: moduletypes.ProtocolGRPC,
+					Enabled:  true,
+				},
 			},
 		},
 	}
 
-	runtimeOptions := modulemanagement.RuntimeOptions{
-		Modules:               modules,
-		ServerOptions:         serverOptions,
-		ModuleHandlersConfigs: moduleHandlersConfigs,
-		Logger:                logger,
-	}
-
-	runtime, err := modulemanagement.NewRuntime(runtimeOptions)
+	err = modulewiring.RunWithConfig(config, logger)
 	if err != nil {
-		fmt.Printf("Failed to create runtime: %v\n", err)
+		fmt.Printf("Failed to run module wiring: %v\n", err)
 		os.Exit(1)
 	}
-
-	err = runtime.Start(operationCtx)
-	if err != nil {
-		fmt.Printf("Failed to start runtime: %v\n", err)
-		os.Exit(1)
-	}
-
-	logger.Infof("Runtime is ready")
-
-	modulemanagement.WaitSignals(operationCtx, logger)
-
-	logger.Infof("About to stop runtime...")
-
-	// Stop runtime
-	ctx := context.Background()
-	err = runtime.Stop(ctx)
-	if err != nil {
-		fmt.Printf("Failed to stop runtime: %v\n", err)
-		os.Exit(1)
-	}
-
-	logger.Infof("Done")
 }

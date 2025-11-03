@@ -1,16 +1,15 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
 
 	"github.com/core-tools/hsu-core/pkg/logging"
 	sprintflogging "github.com/core-tools/hsu-core/pkg/logging/sprintf"
-	"github.com/core-tools/hsu-core/pkg/modulemanagement"
-	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
-	"github.com/core-tools/hsu-echo/cmd/cli/echoclient"
-	"github.com/core-tools/hsu-echo/pkg/domain"
+	"github.com/core-tools/hsu-core/pkg/modulemanagement/modulewiring"
+
+	_ "github.com/core-tools/hsu-example1-go/cmd/cli/echoclient/app"
+	_ "github.com/core-tools/hsu-example1-go/pkg/app"
 
 	flags "github.com/jessevdk/go-flags"
 )
@@ -43,48 +42,22 @@ func main() {
 
 	logger.Infof("opts: %+v", opts)
 
-	logger.Infof("Starting...")
-
-	componentCtx := context.Background()
-	operationCtx := componentCtx
-
-	module1 := domain.NewEchoModule(logger)
-	module2 := echoclient.NewEchoClientModule(logger)
-	modules := []moduletypes.Module{
-		module1,
-		module2,
+	config := &modulewiring.Config{
+		Modules: []modulewiring.ModuleConfig{
+			{
+				ID:      "echo",
+				Enabled: true,
+			},
+			{
+				ID:      "echo-client",
+				Enabled: true,
+			},
+		},
 	}
 
-	runtimeOptions := modulemanagement.RuntimeOptions{
-		Modules: modules,
-		Logger:  logger,
-	}
-
-	runtime, err := modulemanagement.NewRuntime(runtimeOptions)
+	err = modulewiring.RunWithConfig(config, logger)
 	if err != nil {
-		fmt.Printf("Failed to create runtime: %v\n", err)
+		fmt.Printf("Failed to run module wiring: %v\n", err)
 		os.Exit(1)
 	}
-
-	err = runtime.Start(operationCtx)
-	if err != nil {
-		fmt.Printf("Failed to start runtime: %v\n", err)
-		os.Exit(1)
-	}
-
-	logger.Infof("Runtime is ready")
-
-	modulemanagement.WaitSignals(operationCtx, logger)
-
-	logger.Infof("About to stop runtime...")
-
-	// Stop runtime
-	ctx := context.Background()
-	err = runtime.Stop(ctx)
-	if err != nil {
-		fmt.Printf("Failed to stop runtime: %v\n", err)
-		os.Exit(1)
-	}
-
-	logger.Infof("Done")
 }

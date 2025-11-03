@@ -11,7 +11,7 @@ import (
 type EchoServiceProvider interface {
 }
 
-func NewEchoModule(serviceProvider EchoServiceProvider, logger logging.Logger) (moduletypes.Module, echocontract.EchoServiceHandlers, error) {
+func NewEchoModule(serviceProvider EchoServiceProvider, logger logging.Logger) (moduletypes.Module, echocontract.EchoServiceHandlers) {
 	module := &echoModule{
 		service1: NewHandler1(logger),
 		service2: NewHandler2(logger),
@@ -20,8 +20,7 @@ func NewEchoModule(serviceProvider EchoServiceProvider, logger logging.Logger) (
 		echocontract.EchoServiceHandlers{
 			Service1: module.service1,
 			Service2: module.service2,
-		},
-		nil
+		}
 }
 
 type echoModule struct {

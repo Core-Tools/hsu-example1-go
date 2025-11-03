@@ -25,11 +25,11 @@ func init() {
 	modulewiring.RegisterModule("echo", moduleDesc)
 }
 
-func NewEchoServiceProvider(serviceConnector moduleapi.ServiceConnector, logger logging.Logger) (moduletypes.ServiceProviderHandle, error) {
+func NewEchoServiceProvider(serviceConnector moduleapi.ServiceConnector, logger logging.Logger) moduletypes.ServiceProviderHandle {
 	serviceProvider := &echoServiceProvider{}
 	return moduletypes.ServiceProviderHandle{
 		ServiceProvider: serviceProvider,
-	}, nil
+	}
 }
 
 type echoServiceProvider struct{}

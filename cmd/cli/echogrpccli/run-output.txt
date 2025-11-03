@@ -1,28 +1,39 @@
 C:\Projects\core-tools\current\hsu-example1-go\cmd\cli\echogrpccli>echogrpccli.exe
-2025/10/22 01:54:52 opts: {}
-2025/10/22 01:54:52 Starting...
-2025/10/22 01:54:52 Service gateway factory created
-2025/10/22 01:54:52 Runtime is ready
-2025/10/22 01:54:52 Starting echo client loop
-2025/10/22 01:55:02 Creating gateway for module: echo, service: service1, protocol: auto
-2025/10/22 01:55:02 Discovered 1 APIs for module echo
-2025/10/22 01:55:02 Connecting to gRPC server at address: localhost:61570
-2025/10/22 01:55:02 Using default insecure gRPC dial options
-2025/10/22 01:55:02 gRPC client connection created successfully at localhost:61570
-2025/10/22 01:55:02 Module client: Service1.Echo1 request: Hello, World!
-2025/10/22 01:55:02 gRPC Gateway: Service1.Echo1 request: Hello, World!
-2025/10/22 01:55:02 gRPC Gateway: Service1.Echo1 response: Hello, World!
-2025/10/22 01:55:02 Module client: Service1.Echo1 response: Hello, World!
-2025/10/22 01:55:12 Creating gateway for module: echo, service: service1, protocol: auto
-2025/10/22 01:55:12 Discovered 1 APIs for module echo
-2025/10/22 01:55:12 Connecting to gRPC server at address: localhost:61570
-2025/10/22 01:55:12 Using default insecure gRPC dial options
-2025/10/22 01:55:12 gRPC client connection created successfully at localhost:61570
-2025/10/22 01:55:12 Module client: Service1.Echo1 request: Hello, World!
-2025/10/22 01:55:12 gRPC Gateway: Service1.Echo1 request: Hello, World!
-2025/10/22 01:55:12 gRPC Gateway: Service1.Echo1 response: Hello, World!
-2025/10/22 01:55:12 Module client: Service1.Echo1 response: Hello, World!
-2025/10/22 01:55:20 Received signal: interrupt
-2025/10/22 01:55:20 About to stop runtime...
-2025/10/22 01:55:20 Echo client loop stopped
-2025/10/22 01:55:20 Done
+2025/11/04 00:59:39 opts: {}
+2025/11/04 00:59:39 Config: &{Runtime:{Servers:[] ServiceRegistry:{URL: Timeout:0s}} Modules:[{ID:echo-client Servers:[] Enabled:true}]}
+2025/11/04 00:59:39 Service registry client created
+2025/11/04 00:59:39 Service connector created
+2025/11/04 00:59:39 Service providers created
+2025/11/04 00:59:39 Module: echo-client
+2025/11/04 00:59:39 Server manager created
+2025/11/04 00:59:39 Module echo-client created
+2025/11/04 00:59:39 Module echo-client remote APIs: []
+2025/11/04 00:59:39 Modules created: 1
+2025/11/04 00:59:39 Remote APIs: [{ModuleID:echo-client ModuleAPIs:[]}]
+2025/11/04 00:59:39 Published APIs for module echo-client: 0 endpoints
+2025/11/04 00:59:39 Remote APIs published
+2025/11/04 00:59:39 Runtime created
+2025/11/04 00:59:39 Runtime is ready
+2025/11/04 00:59:39 Starting echo client loop
+2025/11/04 00:59:49 Connecting to module: echo, service: service1, protocol: auto
+2025/11/04 00:59:49 Discovered 1 APIs for module echo
+2025/11/04 00:59:49 Connecting to gRPC server at address: localhost:56312
+2025/11/04 00:59:49 Using default insecure gRPC dial options
+2025/11/04 00:59:49 gRPC client connection created successfully at localhost:56312
+2025/11/04 00:59:49 Module client: Service1.Echo1 request: Hello, World!
+2025/11/04 00:59:49 gRPC Gateway: Service1.Echo1 request: Hello, World!
+2025/11/04 00:59:49 gRPC Gateway: Service1.Echo1 response: Hello, World!
+2025/11/04 00:59:49 Module client: Service1.Echo1 response: Hello, World!
+2025/11/04 00:59:59 Connecting to module: echo, service: service1, protocol: auto
+2025/11/04 00:59:59 Discovered 1 APIs for module echo
+2025/11/04 00:59:59 Connecting to gRPC server at address: localhost:56312
+2025/11/04 00:59:59 Using default insecure gRPC dial options
+2025/11/04 00:59:59 gRPC client connection created successfully at localhost:56312
+2025/11/04 00:59:59 Module client: Service1.Echo1 request: Hello, World!
+2025/11/04 00:59:59 gRPC Gateway: Service1.Echo1 request: Hello, World!
+2025/11/04 00:59:59 gRPC Gateway: Service1.Echo1 response: Hello, World!
+2025/11/04 00:59:59 Module client: Service1.Echo1 response: Hello, World!
+2025/11/04 01:00:00 Received signal: interrupt
+2025/11/04 01:00:00 About to stop runtime...
+2025/11/04 01:00:00 Echo client loop stopped
+2025/11/04 01:00:00 Done
