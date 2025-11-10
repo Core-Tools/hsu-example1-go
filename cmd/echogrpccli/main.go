@@ -6,17 +6,15 @@ import (
 
 	"github.com/core-tools/hsu-core/pkg/logging"
 	sprintflogging "github.com/core-tools/hsu-core/pkg/logging/sprintf"
-	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduleproto"
-	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/modulewiring"
 
-	_ "github.com/core-tools/hsu-example1-go/pkg/app"
+	_ "github.com/core-tools/hsu-echo/pkg/echoclient/echoclientwiring"
 
 	flags "github.com/jessevdk/go-flags"
 )
 
 type flagOptions struct {
-	Port int `long:"port" description:"port to listen on"`
+	//ConfigFile string `long:"config" description:"path to the config file"`
 }
 
 func main() {
@@ -47,27 +45,15 @@ func main() {
 	config := &modulewiring.Config{
 		Modules: []modulewiring.ModuleConfig{
 			{
-				ID: "echo",
-				Servers: []moduleproto.ServerID{
-					"server-grpc",
-				},
+				ID:      "echo-client",
 				Enabled: true,
-			},
-		},
-		Runtime: modulewiring.RuntimeConfig{
-			Servers: []modulewiring.ServerConfig{
-				{
-					ID:       "server-grpc",
-					Protocol: moduletypes.ProtocolGRPC,
-					Enabled:  true,
-				},
 			},
 		},
 	}
 
 	err = modulewiring.RunWithConfig(config, logger)
 	if err != nil {
-		fmt.Printf("Failed to run module wiring: %v\n", err)
+		logger.Errorf("Failed to run module wiring: %v", err)
 		os.Exit(1)
 	}
 }

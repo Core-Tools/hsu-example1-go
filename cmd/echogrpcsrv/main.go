@@ -6,15 +6,17 @@ import (
 
 	"github.com/core-tools/hsu-core/pkg/logging"
 	sprintflogging "github.com/core-tools/hsu-core/pkg/logging/sprintf"
+	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduleproto"
+	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/modulewiring"
 
-	_ "github.com/core-tools/hsu-example1-go/cmd/cli/echoclient/app"
-	_ "github.com/core-tools/hsu-example1-go/pkg/app"
+	_ "github.com/core-tools/hsu-echo/pkg/echoserver/echoserverwiring"
 
 	flags "github.com/jessevdk/go-flags"
 )
 
 type flagOptions struct {
+	Port int `long:"port" description:"port to listen on"`
 }
 
 func main() {
@@ -45,12 +47,20 @@ func main() {
 	config := &modulewiring.Config{
 		Modules: []modulewiring.ModuleConfig{
 			{
-				ID:      "echo",
+				ID: "echo",
+				Servers: []moduleproto.ServerID{
+					"server-grpc",
+				},
 				Enabled: true,
 			},
-			{
-				ID:      "echo-client",
-				Enabled: true,
+		},
+		Runtime: modulewiring.RuntimeConfig{
+			Servers: []modulewiring.ServerConfig{
+				{
+					ID:       "server-grpc",
+					Protocol: moduletypes.ProtocolGRPC,
+					Enabled:  true,
+				},
 			},
 		},
 	}

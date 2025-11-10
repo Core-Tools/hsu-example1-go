@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/core-tools/hsu-core/pkg/logging"
-	echocontract "github.com/core-tools/hsu-echo/pkg/api/contract"
+	"github.com/core-tools/hsu-echo/pkg/echocontract"
 	"github.com/core-tools/hsu-echo/pkg/generated/api/proto"
 
 	"google.golang.org/grpc"

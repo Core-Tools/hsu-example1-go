@@ -7,8 +7,8 @@ import (
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduleapi"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/modulewiring"
-	echocontract "github.com/core-tools/hsu-echo/pkg/api/contract"
-	echogrpcapi "github.com/core-tools/hsu-echo/pkg/api/grpc"
+	"github.com/core-tools/hsu-echo/pkg/echocontract"
+	"github.com/core-tools/hsu-echo/pkg/echogrpcapi"
 )
 
 func NewEchoServiceGateways(serviceConnector moduleapi.ServiceConnector, logger logging.Logger) echocontract.EchoServiceGateways {

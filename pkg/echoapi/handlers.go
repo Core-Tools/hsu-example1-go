@@ -6,8 +6,8 @@ import (
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduleproto"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/modulewiring"
-	echocontract "github.com/core-tools/hsu-echo/pkg/api/contract"
-	echogrpcapi "github.com/core-tools/hsu-echo/pkg/api/grpc"
+	"github.com/core-tools/hsu-echo/pkg/echocontract"
+	"github.com/core-tools/hsu-echo/pkg/echogrpcapi"
 )
 
 func NewEchoHandlersRegistrar(protocolServers []moduleproto.ProtocolServer, logger logging.Logger) (modulewiring.HandlersRegistrar[echocontract.EchoServiceHandlers], error) {

@@ -1,13 +1,13 @@
-package echoclientapp
+package echoclientwiring
 
 import (
 	"github.com/core-tools/hsu-core/pkg/logging"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduleapi"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/modulewiring"
-	echoapi "github.com/core-tools/hsu-echo/pkg/api"
-	echocontract "github.com/core-tools/hsu-echo/pkg/api/contract"
-	echoclientdomain "github.com/core-tools/hsu-example1-go/cmd/cli/echoclient/domain"
+	"github.com/core-tools/hsu-echo/pkg/echoapi"
+	"github.com/core-tools/hsu-echo/pkg/echoclient/echoclientdomain"
+	"github.com/core-tools/hsu-echo/pkg/echocontract"
 )
 
 func init() {

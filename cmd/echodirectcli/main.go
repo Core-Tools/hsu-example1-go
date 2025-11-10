@@ -8,13 +8,13 @@ import (
 	sprintflogging "github.com/core-tools/hsu-core/pkg/logging/sprintf"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/modulewiring"
 
-	_ "github.com/core-tools/hsu-example1-go/cmd/cli/echoclient/app"
+	_ "github.com/core-tools/hsu-echo/pkg/echoclient/echoclientwiring"
+	_ "github.com/core-tools/hsu-echo/pkg/echoserver/echoserverwiring"
 
 	flags "github.com/jessevdk/go-flags"
 )
 
 type flagOptions struct {
-	//ConfigFile string `long:"config" description:"path to the config file"`
 }
 
 func main() {
@@ -45,6 +45,10 @@ func main() {
 	config := &modulewiring.Config{
 		Modules: []modulewiring.ModuleConfig{
 			{
+				ID:      "echo",
+				Enabled: true,
+			},
+			{
 				ID:      "echo-client",
 				Enabled: true,
 			},
@@ -53,7 +57,7 @@ func main() {
 
 	err = modulewiring.RunWithConfig(config, logger)
 	if err != nil {
-		logger.Errorf("Failed to run module wiring: %v", err)
+		fmt.Printf("Failed to run module wiring: %v\n", err)
 		os.Exit(1)
 	}
 }

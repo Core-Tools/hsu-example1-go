@@ -1,10 +1,10 @@
-package echodomain
+package echoserverdomain
 
 import (
 	"context"
 
 	"github.com/core-tools/hsu-core/pkg/logging"
-	echocontract "github.com/core-tools/hsu-echo/pkg/api/contract"
+	"github.com/core-tools/hsu-echo/pkg/echocontract"
 )
 
 func NewHandler2(logger logging.Logger) echocontract.Service2 {

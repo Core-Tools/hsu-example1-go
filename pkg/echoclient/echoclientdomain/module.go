@@ -7,7 +7,7 @@ import (
 
 	"github.com/core-tools/hsu-core/pkg/logging"
 	"github.com/core-tools/hsu-core/pkg/modulemanagement/moduletypes"
-	echocontract "github.com/core-tools/hsu-echo/pkg/api/contract"
+	"github.com/core-tools/hsu-echo/pkg/echocontract"
 )
 
 type EchoClientServiceProvider interface {
