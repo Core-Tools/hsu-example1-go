@@ -17,10 +17,10 @@ func init() {
 		moduletypes.EmptyServiceGateways,
 		moduletypes.EmptyServiceHandlers,
 	]{
-		ServiceProviderFactoryFunc:   NewEchoClientServiceProvider,
-		ModuleFactoryFunc:            echoclientdomain.NewEchoClientModule,
-		HandlersRegistrarFactoryFunc: nil,
-		DirectClosureEnableFunc:      nil,
+		ServiceProviderFactoryFunc: NewEchoClientServiceProvider,
+		ModuleFactoryFunc:          echoclientdomain.NewEchoClientModule,
+		HandlersRegistrarFunc:      nil,
+		DirectClosureEnablerFunc:   nil,
 	}
 	modulewiring.RegisterModule("echo-client", moduleDesc)
 }

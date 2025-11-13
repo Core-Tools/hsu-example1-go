@@ -17,10 +17,10 @@ func init() {
 		echocontract.EchoServiceGateways,
 		echocontract.EchoServiceHandlers,
 	]{
-		ServiceProviderFactoryFunc:   NewEchoServiceProvider,
-		ModuleFactoryFunc:            echoserverdomain.NewEchoModule,
-		HandlersRegistrarFactoryFunc: echoapi.NewEchoHandlersRegistrar,
-		DirectClosureEnableFunc:      echoapi.EchoDirectClosureEnable,
+		ServiceProviderFactoryFunc: NewEchoServiceProvider,
+		ModuleFactoryFunc:          echoserverdomain.NewEchoModule,
+		HandlersRegistrarFunc:      echoapi.EchoHandlersRegistrar,
+		DirectClosureEnablerFunc:   echoapi.EchoDirectClosureEnabler,
 	}
 	modulewiring.RegisterModule("echo", moduleDesc)
 }

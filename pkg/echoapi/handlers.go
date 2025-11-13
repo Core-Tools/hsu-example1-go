@@ -10,11 +10,12 @@ import (
 	"github.com/core-tools/hsu-echo/pkg/echogrpcapi"
 )
 
-func NewEchoHandlersRegistrar(protocolServers []moduleproto.ProtocolServer, logger logging.Logger) (modulewiring.HandlersRegistrar[echocontract.EchoServiceHandlers], error) {
-	return &echoHandlersRegistrar{
-		protocolServers: protocolServers,
-		logger:          logger,
-	}, nil
+func EchoHandlersRegistrar(options modulewiring.HandlersRegistrarOptions[echocontract.EchoServiceHandlers]) (modulewiring.ProtocolToServicesMap, error) {
+	handlersRegistrar := &echoHandlersRegistrar{
+		protocolServers: options.ProtocolServers,
+		logger:          options.Logger,
+	}
+	return handlersRegistrar.RegisterHandlers(options.ServiceHandlers)
 }
 
 type echoHandlersRegistrar struct {

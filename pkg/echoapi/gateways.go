@@ -71,7 +71,7 @@ func (g *echoServiceGateways) GetService2(ctx context.Context, protocol modulety
 	return serviceGatewayFactory.NewServiceGateway(ctx, protocol)
 }
 
-func EchoDirectClosureEnable(options modulewiring.DirectClosureEnableOptions[echocontract.EchoServiceGateways, echocontract.EchoServiceHandlers]) {
+func EchoDirectClosureEnabler(options modulewiring.DirectClosureEnablerOptions[echocontract.EchoServiceGateways, echocontract.EchoServiceHandlers]) {
 	serviceConnector := options.ServiceConnector
 	serviceGateways := options.ServiceGateways
 	serviceHandlers := options.ServiceHandlers
